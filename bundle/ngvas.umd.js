@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("@angular/core"), require("@angular/common"), require("@angular/platform-browser"));
+		module.exports = factory(require("@angular/core"), require("@angular/common"));
 	else if(typeof define === 'function' && define.amd)
-		define(["@angular/core", "@angular/common", "@angular/platform-browser"], factory);
+		define(["@angular/core", "@angular/common"], factory);
 	else if(typeof exports === 'object')
-		exports["ngvas"] = factory(require("@angular/core"), require("@angular/common"), require("@angular/platform-browser"));
+		exports["ngvas"] = factory(require("@angular/core"), require("@angular/common"));
 	else
-		root["ngvas"] = factory(root["@angular/core"], root["@angular/common"], root["@angular/platform-browser"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_0__, __WEBPACK_EXTERNAL_MODULE_35__, __WEBPACK_EXTERNAL_MODULE_36__) {
+		root["ngvas"] = factory(root["@angular/core"], root["@angular/common"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_0__, __WEBPACK_EXTERNAL_MODULE_35__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -16,9 +16,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	function __webpack_require__(moduleId) {
 /******/
 /******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId])
+/******/ 		if(installedModules[moduleId]) {
 /******/ 			return installedModules[moduleId].exports;
-/******/
+/******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			i: moduleId,
@@ -1846,7 +1846,6 @@ exports.toRgbaString = toRgbaString;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(0);
-const platform_browser_1 = __webpack_require__(36);
 const common_1 = __webpack_require__(35);
 const ngvas_component_1 = __webpack_require__(33);
 const ngvas_arc_component_1 = __webpack_require__(24);
@@ -1863,7 +1862,6 @@ class NgvasModule {
 NgvasModule.decorators = [
     { type: core_1.NgModule, args: [{
                 imports: [
-                    platform_browser_1.BrowserModule,
                     common_1.CommonModule,
                 ],
                 declarations: [
@@ -2772,12 +2770,6 @@ var shapes;
 /***/ (function(module, exports) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE_35__;
-
-/***/ }),
-/* 36 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_36__;
 
 /***/ })
 /******/ ]);
