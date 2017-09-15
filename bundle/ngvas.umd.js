@@ -88,59 +88,84 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_0__;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const BaseShape_1 = __webpack_require__(7);
-const StyleManager_1 = __webpack_require__(21);
-const color_style_parser_1 = __webpack_require__(18);
-const StyleTweenHelper_1 = __webpack_require__(22);
+var BaseShape_1 = __webpack_require__(7);
+var StyleManager_1 = __webpack_require__(21);
+var color_style_parser_1 = __webpack_require__(18);
+var StyleTweenHelper_1 = __webpack_require__(22);
 /**
  * Draws a filled and/or stroked rectangle.
  */
-class BaseStyle extends BaseShape_1.BaseShape {
-    constructor(canvas, ctx, name) {
-        super(canvas, ctx, name);
-        this._styleTweenHelper = new StyleTweenHelper_1.StyleTweenHelper();
-        this.styleManager = new StyleManager_1.StyleManager(this.ctx);
+var BaseStyle = (function (_super) {
+    __extends(BaseStyle, _super);
+    function BaseStyle(canvas, ctx, name) {
+        var _this = _super.call(this, canvas, ctx, name) || this;
+        _this._styleTweenHelper = new StyleTweenHelper_1.StyleTweenHelper();
+        _this.styleManager = new StyleManager_1.StyleManager(_this.ctx);
+        return _this;
     }
-    set isVisible(v) {
-        super.isVisible = v;
-    }
-    get isVisible() {
-        return (this.styleManager.hasFill || this.styleManager.hasStroke) && this.ctx.globalAlpha > 0 && super.isVisible;
-    }
-    set opacity(alpha) {
-        this.styleManager.opacity = alpha;
-    }
-    get opacity() {
-        return this.styleManager.opacity;
-    }
-    compose(alpha, overlay) {
+    Object.defineProperty(BaseStyle.prototype, "isVisible", {
+        get: function () {
+            return (this.styleManager.hasFill || this.styleManager.hasStroke) && this.ctx.globalAlpha > 0 && this._isVisible;
+        },
+        set: function (v) {
+            this._isVisible = v;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseStyle.prototype, "opacity", {
+        get: function () {
+            return this.styleManager.opacity;
+        },
+        set: function (alpha) {
+            this.styleManager.opacity = alpha;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BaseStyle.prototype.compose = function (alpha, overlay) {
         this.styleManager.compose(alpha, overlay);
         return this;
-    }
-    withFill(style, duration = 0, tween, callback) {
+    };
+    BaseStyle.prototype.withFill = function (style, duration, tween, callback) {
+        if (duration === void 0) { duration = 0; }
         if (duration > 1 && style !== undefined) {
-            const vals = color_style_parser_1.parseColorStyle(style);
-            const props = ["fillColorR", "fillColorG", "fillColorB", "fillColorA"];
+            var vals = color_style_parser_1.parseColorStyle(style);
+            var props = ["fillColorR", "fillColorG", "fillColorB", "fillColorA"];
             this.tweenManager.addTween(this._styleTweenHelper, tween, duration, vals, props, callback);
         }
         else {
-            style = typeof style === "number" ? `#${style.toString(16)}` : style;
+            style = typeof style === "number" ? "#" + style.toString(16) : style;
             if (typeof style === "string") {
                 this._styleTweenHelper.fillColorRGBA = style;
             }
             this.styleManager.withFill(style);
         }
         return this;
-    }
-    withStroke(...args) {
+    };
+    BaseStyle.prototype.withStroke = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
         if (typeof args[2] === "number" && args[2] > 1) {
-            const vals = [args[0] | 0, ...color_style_parser_1.parseColorStyle(args[1])];
-            const props = ["strokeWidth", "strokeColorR", "strokeColorG", "strokeColorB", "strokeColorA"];
+            var vals = [args[0] | 0].concat(color_style_parser_1.parseColorStyle(args[1]));
+            var props = ["strokeWidth", "strokeColorR", "strokeColorG", "strokeColorB", "strokeColorA"];
             this.tweenManager.addTween(this._styleTweenHelper, args[3], args[2], vals, props, args[4]);
         }
         else {
-            let [width, style, join, cap, dashOffset, miterLimit] = args;
+            var width = args[0], style = args[1], join = args[2], cap = args[3], dashOffset = args[4], miterLimit = args[5];
             if (width !== undefined) {
                 this._styleTweenHelper.strokeWidth = width;
             }
@@ -150,39 +175,41 @@ class BaseStyle extends BaseShape_1.BaseShape {
             this.styleManager.withStroke(undefined, undefined, join, cap, dashOffset, miterLimit);
         }
         return this;
-    }
-    withShadow(blur, color, offsetX, offsetY, duration = 0, tween, callback) {
+    };
+    BaseStyle.prototype.withShadow = function (blur, color, offsetX, offsetY, duration, tween, callback) {
+        if (duration === void 0) { duration = 0; }
         if (duration > 1) {
-            const vals = [blur, ...color_style_parser_1.parseColorStyle(color), offsetX, offsetY];
-            const props = ["shadowBlur", "shadowColorR", "shadowColorG", "shadowColorB", "shadowColorA", "shadowOffsetX", "shadowOffsetY"];
+            var vals = [blur].concat(color_style_parser_1.parseColorStyle(color), [offsetX, offsetY]);
+            var props = ["shadowBlur", "shadowColorR", "shadowColorG", "shadowColorB", "shadowColorA", "shadowOffsetX", "shadowOffsetY"];
             this.tweenManager.addTween(this._styleTweenHelper, tween, duration, vals, props, callback);
         }
         else {
-            color = typeof color === "number" ? `#${color.toString(16)}` : color;
+            color = typeof color === "number" ? "#" + color.toString(16) : color;
             this._styleTweenHelper.shadowBlur = blur;
             this._styleTweenHelper.shadowColorRGBA = color;
             this._styleTweenHelper.shadowOffsetX = offsetX;
             this._styleTweenHelper.shadowOffsetY = offsetY;
         }
         return this;
-    }
-    textStyle(font, align, baseline) {
+    };
+    BaseStyle.prototype.textStyle = function (font, align, baseline) {
         this.styleManager.textStyle(font, align, baseline);
         return this;
-    }
-    draw(ctxt) {
+    };
+    BaseStyle.prototype.draw = function (ctxt) {
         this.styleManager.begin();
         this._styleTweenHelper.draw(this.styleManager);
-        super.draw(ctxt);
+        _super.prototype.draw.call(this, ctxt);
         this.styleManager.end();
-    }
-    clear() {
-        super.clear();
+    };
+    BaseStyle.prototype.clear = function () {
+        _super.prototype.clear.call(this);
         this.styleManager.clear();
-        super.isVisible = true;
+        this._isVisible = true;
         return this;
-    }
-}
+    };
+    return BaseStyle;
+}(BaseShape_1.BaseShape));
 exports.BaseStyle = BaseStyle;
 //# sourceMappingURL=BaseStyle.js.map
 
@@ -211,15 +238,15 @@ var ShapeType;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(0);
+var core_1 = __webpack_require__(0);
 /**
  * The base class for all shape components.
  */
-class NgvasBaseComponent {
+var NgvasBaseComponent = (function () {
     /**
      * Base constructor for the base component.
      */
-    constructor(Clazz) {
+    function NgvasBaseComponent(Clazz) {
         this.Clazz = Clazz;
         this._delayedSetters = [];
         this.shapeOut = new core_1.EventEmitter();
@@ -231,171 +258,272 @@ class NgvasBaseComponent {
         this.mouseenterEvent = new core_1.EventEmitter();
         this.mouseleaveEvent = new core_1.EventEmitter();
     }
-    set active(a) { this.execOrDelay(s => s.isActive = a); }
+    Object.defineProperty(NgvasBaseComponent.prototype, "active", {
+        set: function (a) { this.execOrDelay(function (s) { return s.isActive = a; }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-    set visible(v) { this.execOrDelay(s => s.isVisible = v); }
+    Object.defineProperty(NgvasBaseComponent.prototype, "visible", {
+        set: function (v) { this.execOrDelay(function (s) { return s.isVisible = v; }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-    set x(x) { this.execOrDelay(s => s.x = x); }
+    Object.defineProperty(NgvasBaseComponent.prototype, "x", {
+        set: function (x) { this.execOrDelay(function (s) { return s.x = x; }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-    set y(y) { this.execOrDelay(s => s.y = y); }
+    Object.defineProperty(NgvasBaseComponent.prototype, "y", {
+        set: function (y) { this.execOrDelay(function (s) { return s.y = y; }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-    set origin(xy) {
-        if (xy === "center") {
-            this.execOrDelay(s => s.originToCenter = true);
-        }
-        else {
-            this.execOrDelay(s => {
-                s.originToCenter = false;
-                s.originX = xy[0] || 0;
-                s.originY = xy[1] || 0;
-            });
-        }
-    }
+    Object.defineProperty(NgvasBaseComponent.prototype, "origin", {
+        set: function (xy) {
+            if (xy === "center") {
+                this.execOrDelay(function (s) { return s.originToCenter = true; });
+            }
+            else {
+                this.execOrDelay(function (s) {
+                    s.originToCenter = false;
+                    s.originX = xy[0] || 0;
+                    s.originY = xy[1] || 0;
+                });
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     ;
-    set width(w) { this.execOrDelay(s => s.width = w); }
+    Object.defineProperty(NgvasBaseComponent.prototype, "width", {
+        set: function (w) { this.execOrDelay(function (s) { return s.width = w; }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-    set height(h) { this.execOrDelay(s => s.height = h); }
+    Object.defineProperty(NgvasBaseComponent.prototype, "height", {
+        set: function (h) { this.execOrDelay(function (s) { return s.height = h; }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-    set rotation(r) { this.execOrDelay(s => s.rotation = r); }
+    Object.defineProperty(NgvasBaseComponent.prototype, "rotation", {
+        set: function (r) { this.execOrDelay(function (s) { return s.rotation = r; }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-    set scaleX(x) { this.execOrDelay(s => s.scaleX = x); }
+    Object.defineProperty(NgvasBaseComponent.prototype, "scaleX", {
+        set: function (x) { this.execOrDelay(function (s) { return s.scaleX = x; }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-    set scaleY(y) { this.execOrDelay(s => s.scaleY = y); }
+    Object.defineProperty(NgvasBaseComponent.prototype, "scaleY", {
+        set: function (y) { this.execOrDelay(function (s) { return s.scaleY = y; }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-    set skewX(x) { this.execOrDelay(s => s.skewX = x); }
+    Object.defineProperty(NgvasBaseComponent.prototype, "skewX", {
+        set: function (x) { this.execOrDelay(function (s) { return s.skewX = x; }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-    set skewY(y) { this.execOrDelay(s => s.skewY = y); }
+    Object.defineProperty(NgvasBaseComponent.prototype, "skewY", {
+        set: function (y) { this.execOrDelay(function (s) { return s.skewY = y; }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-    /////////////////////////////////////////////
-    // TWEENER INPUTS
-    set scale(v) {
-        if (typeof v[0] === "number") {
-            const [x, y] = v;
-            this.execOrDelay(s => s.scale(x, y));
-        }
-        else if (Array.isArray(v[0])) {
-            const [[x, y], duration, tween, callback] = v;
-            this.execOrDelay(s => s.scale(x, y, duration, tween, callback));
-        }
-    }
-    set size(v) {
-        if (typeof v[0] === "number") {
-            const [w, h] = v;
-            this.execOrDelay(s => s.resize(w, h));
-        }
-        else if (Array.isArray(v[0])) {
-            const [[w, h], duration, tween, callback] = v;
-            this.execOrDelay(s => s.resize(w, h, duration, tween, callback));
-        }
-    }
-    set skew(v) {
-        if (typeof v[0] === "number") {
-            const [x, y] = v;
-            this.execOrDelay(s => s.skew(x, y));
-        }
-        else if (Array.isArray(v[0])) {
-            const [[x, y], duration, tween, callback] = v;
-            this.execOrDelay(s => s.skew(x, y, duration, tween, callback));
-        }
-    }
-    set rotate(v) {
-        if (typeof v === "number") {
-            const r = v;
-            this.execOrDelay(s => s.rotate(r));
-        }
-        else if (typeof v[0] === "number") {
-            const [r, duration, tween, callback] = v;
-            this.execOrDelay(s => s.rotate(r, duration, tween, callback));
-        }
-    }
-    set translate(v) {
-        if (typeof v[0] === "number") {
-            const [x, y] = v;
-            this.execOrDelay(s => s.translate(x, y));
-        }
-        else if (Array.isArray(v[0])) {
-            const [[x, y], duration, tween, callback] = v;
-            this.execOrDelay(s => s.translate(x, y, duration, tween, callback));
-        }
-    }
-    set animate(f) {
-        if (f === undefined) {
-            this.execOrDelay(s => s.removeAnimationFunction());
-        }
-        else {
-            this.execOrDelay(s => s.setAnimationFunction(f));
-        }
-    }
-    set constrain(fs) {
-        if (fs === undefined) {
-            this.execOrDelay(s => s.withConstraint());
-        }
-        else {
-            this.execOrDelay(s => s.withConstraint(...fs));
-        }
-    }
-    /////////////////////////////////////////////
-    // HIT AREA
-    set hitArea(Clazz) {
-        this.execOrDelay(s => s.withHitArea(Clazz));
-    }
-    /////////////////////////////////////////////
-    // STYLE INPUTS
-    set opacity(alpha) {
-        this.execOrDelay(s => s.opacity = alpha);
-    }
-    set compose(c) {
-        this.execOrDelay(s => s.compose(c.alpha, c.overlay));
-    }
-    set fill(st) {
-        if (Array.isArray(st)) {
-            this.execOrDelay(s => s.withFill(st[0], st[1], st[2], st[3]));
-        }
-        else {
-            this.execOrDelay(s => s.withFill(st));
-        }
-    }
-    set stroke(st) {
-        if (Array.isArray(st)) {
-            this.execOrDelay(s => {
-                s.withStroke(undefined, undefined, st[0].join, st[0].cap, st[0].dashOffset);
-                s.withStroke(st[0].width, st[0].style, st[1], st[2], st[3]);
-            });
-        }
-        else {
-            this.execOrDelay(s => s.withStroke(st.width, st.style, st.join, st.cap, st.dashOffset));
-        }
-    }
-    set shadow(sh) {
-        if (Array.isArray(sh)) {
-            this.execOrDelay(s => s.withShadow(sh[0].blur, sh[0].color, sh[0].offsetX, sh[0].offsetY, sh[1], sh[2], sh[3]));
-        }
-        else {
-            this.execOrDelay(s => s.withShadow(sh.blur, sh.color, sh.offsetX, sh.offsetY));
-        }
-    }
-    getShape() {
+    Object.defineProperty(NgvasBaseComponent.prototype, "scale", {
+        /////////////////////////////////////////////
+        // TWEENER INPUTS
+        set: function (v) {
+            if (typeof v[0] === "number") {
+                var _a = v, x_1 = _a[0], y_1 = _a[1];
+                this.execOrDelay(function (s) { return s.scale(x_1, y_1); });
+            }
+            else if (Array.isArray(v[0])) {
+                var _b = v, _c = _b[0], x_2 = _c[0], y_2 = _c[1], duration_1 = _b[1], tween_1 = _b[2], callback_1 = _b[3];
+                this.execOrDelay(function (s) { return s.scale(x_2, y_2, duration_1, tween_1, callback_1); });
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasBaseComponent.prototype, "size", {
+        set: function (v) {
+            if (typeof v[0] === "number") {
+                var _a = v, w_1 = _a[0], h_1 = _a[1];
+                this.execOrDelay(function (s) { return s.resize(w_1, h_1); });
+            }
+            else if (Array.isArray(v[0])) {
+                var _b = v, _c = _b[0], w_2 = _c[0], h_2 = _c[1], duration_2 = _b[1], tween_2 = _b[2], callback_2 = _b[3];
+                this.execOrDelay(function (s) { return s.resize(w_2, h_2, duration_2, tween_2, callback_2); });
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasBaseComponent.prototype, "skew", {
+        set: function (v) {
+            if (typeof v[0] === "number") {
+                var _a = v, x_3 = _a[0], y_3 = _a[1];
+                this.execOrDelay(function (s) { return s.skew(x_3, y_3); });
+            }
+            else if (Array.isArray(v[0])) {
+                var _b = v, _c = _b[0], x_4 = _c[0], y_4 = _c[1], duration_3 = _b[1], tween_3 = _b[2], callback_3 = _b[3];
+                this.execOrDelay(function (s) { return s.skew(x_4, y_4, duration_3, tween_3, callback_3); });
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasBaseComponent.prototype, "rotate", {
+        set: function (v) {
+            if (typeof v === "number") {
+                var r_1 = v;
+                this.execOrDelay(function (s) { return s.rotate(r_1); });
+            }
+            else if (typeof v[0] === "number") {
+                var _a = v, r_2 = _a[0], duration_4 = _a[1], tween_4 = _a[2], callback_4 = _a[3];
+                this.execOrDelay(function (s) { return s.rotate(r_2, duration_4, tween_4, callback_4); });
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasBaseComponent.prototype, "translate", {
+        set: function (v) {
+            if (typeof v[0] === "number") {
+                var _a = v, x_5 = _a[0], y_5 = _a[1];
+                this.execOrDelay(function (s) { return s.translate(x_5, y_5); });
+            }
+            else if (Array.isArray(v[0])) {
+                var _b = v, _c = _b[0], x_6 = _c[0], y_6 = _c[1], duration_5 = _b[1], tween_5 = _b[2], callback_5 = _b[3];
+                this.execOrDelay(function (s) { return s.translate(x_6, y_6, duration_5, tween_5, callback_5); });
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasBaseComponent.prototype, "animate", {
+        set: function (f) {
+            if (f === undefined) {
+                this.execOrDelay(function (s) { return s.removeAnimationFunction(); });
+            }
+            else {
+                this.execOrDelay(function (s) { return s.setAnimationFunction(f); });
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasBaseComponent.prototype, "constrain", {
+        set: function (fs) {
+            if (fs === undefined) {
+                this.execOrDelay(function (s) { return s.withConstraint(); });
+            }
+            else {
+                this.execOrDelay(function (s) { return s.withConstraint.apply(s, fs); });
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasBaseComponent.prototype, "hitArea", {
+        /////////////////////////////////////////////
+        // HIT AREA
+        set: function (Clazz) {
+            this.execOrDelay(function (s) { return s.withHitArea(Clazz); });
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasBaseComponent.prototype, "opacity", {
+        /////////////////////////////////////////////
+        // STYLE INPUTS
+        set: function (alpha) {
+            this.execOrDelay(function (s) { return s.opacity = alpha; });
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasBaseComponent.prototype, "compose", {
+        set: function (c) {
+            this.execOrDelay(function (s) { return s.compose(c.alpha, c.overlay); });
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasBaseComponent.prototype, "fill", {
+        set: function (st) {
+            if (Array.isArray(st)) {
+                this.execOrDelay(function (s) { return s.withFill(st[0], st[1], st[2], st[3]); });
+            }
+            else {
+                this.execOrDelay(function (s) { return s.withFill(st); });
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasBaseComponent.prototype, "stroke", {
+        set: function (st) {
+            if (Array.isArray(st)) {
+                this.execOrDelay(function (s) {
+                    s.withStroke(undefined, undefined, st[0].join, st[0].cap, st[0].dashOffset);
+                    s.withStroke(st[0].width, st[0].style, st[1], st[2], st[3]);
+                });
+            }
+            else {
+                this.execOrDelay(function (s) { return s.withStroke(st.width, st.style, st.join, st.cap, st.dashOffset); });
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasBaseComponent.prototype, "shadow", {
+        set: function (sh) {
+            if (Array.isArray(sh)) {
+                this.execOrDelay(function (s) { return s.withShadow(sh[0].blur, sh[0].color, sh[0].offsetX, sh[0].offsetY, sh[1], sh[2], sh[3]); });
+            }
+            else {
+                this.execOrDelay(function (s) { return s.withShadow(sh.blur, sh.color, sh.offsetX, sh.offsetY); });
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    NgvasBaseComponent.prototype.getShape = function () {
         return this._shape;
-    }
-    initShape(origCanvas, ctx) {
+    };
+    NgvasBaseComponent.prototype.initShape = function (origCanvas, ctx) {
+        var _this = this;
         if (this._shape !== undefined) {
             return this._shape;
         }
         this._shape = new this.Clazz(origCanvas, ctx, this.name);
         if (this.clickEvent.observers.length > 0) {
-            this._shape.addEventListener("click", e => { this.clickEvent.emit(e); });
+            this._shape.addEventListener("click", function (e) { _this.clickEvent.emit(e); });
         }
         if (this.dblclickEvent.observers.length > 0) {
-            this._shape.addEventListener("dblclick", e => { this.dblclickEvent.emit(e); });
+            this._shape.addEventListener("dblclick", function (e) { _this.dblclickEvent.emit(e); });
         }
         if (this.wheelEvent.observers.length > 0) {
-            this._shape.addEventListener("wheel", e => { this.wheelEvent.emit(e); });
+            this._shape.addEventListener("wheel", function (e) { _this.wheelEvent.emit(e); });
         }
         if (this.mouseenterEvent.observers.length > 0) {
-            this._shape.addEventListener("mouseenter", e => { this.mouseenterEvent.emit(e); });
+            this._shape.addEventListener("mouseenter", function (e) { _this.mouseenterEvent.emit(e); });
         }
         if (this.mouseleaveEvent.observers.length > 0) {
-            this._shape.addEventListener("mouseleave", e => { this.mouseleaveEvent.emit(e); });
+            this._shape.addEventListener("mouseleave", function (e) { _this.mouseleaveEvent.emit(e); });
         }
         // TODO Wrap this._shape in a Proxy to emit Outputs.
         // this._shape = new Proxy(this._shape, {
@@ -406,15 +534,16 @@ class NgvasBaseComponent {
         //         return true;
         //     }
         // });
-        this._delayedSetters.forEach(f => f(this._shape));
+        this._delayedSetters.forEach(function (f) { return f(_this._shape); });
         this._delayedSetters = [];
         this.shapeOut.emit(this._shape);
         return this._shape;
-    }
-    execOrDelay(f) {
+    };
+    NgvasBaseComponent.prototype.execOrDelay = function (f) {
         this._shape ? f(this._shape) : this._delayedSetters.push(f);
-    }
-}
+    };
+    return NgvasBaseComponent;
+}());
 NgvasBaseComponent.propDecorators = {
     'name': [{ type: core_1.Input, args: ["name",] },],
     'active': [{ type: core_1.Input, args: ["active",] },],
@@ -458,77 +587,103 @@ exports.NgvasBaseComponent = NgvasBaseComponent;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const Group_1 = __webpack_require__(20);
-const canvasCtxt = Object.freeze({
+var Group_1 = __webpack_require__(20);
+var canvasCtxt = Object.freeze({
     scaleX: 1, scaleY: 1, skewX: 0, skewY: 0, moveX: 0, moveY: 0, rotate: 0,
 });
 function createOffscreenCanvas(canvas) {
-    const c = document.createElement("canvas");
+    var c = document.createElement("canvas");
     c.width = canvas.width;
     c.height = canvas.height;
     return c;
 }
-class CanvasGroup extends Group_1.Group {
-    constructor(canvas, offscreenCanvas = createOffscreenCanvas(canvas), isActive = false) {
+var CanvasGroup = (function (_super) {
+    __extends(CanvasGroup, _super);
+    function CanvasGroup(canvas, offscreenCanvas, isActive) {
+        if (offscreenCanvas === void 0) { offscreenCanvas = createOffscreenCanvas(canvas); }
+        if (isActive === void 0) { isActive = false; }
+        var _this = 
         // as any disables null check.
-        super(canvas, offscreenCanvas.getContext("2d"), canvas.id || "CanvasGroup");
-        this._reqAniFrameId = 0;
-        super.isActive = isActive;
-        this.width = canvas.width;
-        this.height = canvas.height;
+        _super.call(this, canvas, offscreenCanvas.getContext("2d"), canvas.id || "CanvasGroup") || this;
+        _this._reqAniFrameId = 0;
+        _this.__isActive = isActive;
+        _this.width = canvas.width;
+        _this.height = canvas.height;
         // Async so other shapes can be added before first draw.
-        this._reqAniFrameId = window.requestAnimationFrame(() => this.draw(canvasCtxt));
+        _this._reqAniFrameId = window.requestAnimationFrame(function () { return _this.draw(canvasCtxt); });
+        return _this;
     }
-    redraw() {
+    CanvasGroup.prototype.redraw = function () {
         this.draw(canvasCtxt);
-    }
-    get context() {
-        return this.ctx;
-    }
-    get isActive() {
-        return super.isActive;
-    }
-    set isActive(v) {
-        if (super.isActive === false && v === true) {
-            this._reqAniFrameId = window.requestAnimationFrame(() => this.draw(canvasCtxt));
-        }
-        else {
-            window.cancelAnimationFrame(this._reqAniFrameId);
-            this._reqAniFrameId = 0;
-        }
-        super.isActive = v;
-    }
-    draw(ctxt) {
+    };
+    Object.defineProperty(CanvasGroup.prototype, "context", {
+        get: function () {
+            return this.ctx;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CanvasGroup.prototype, "isActive", {
+        get: function () {
+            return this.__isActive;
+        },
+        set: function (v) {
+            var _this = this;
+            if (this.__isActive === false && v === true) {
+                this._reqAniFrameId = window.requestAnimationFrame(function () { return _this.draw(canvasCtxt); });
+            }
+            else {
+                window.cancelAnimationFrame(this._reqAniFrameId);
+                this._reqAniFrameId = 0;
+            }
+            this.__isActive = v;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    CanvasGroup.prototype.draw = function (ctxt) {
+        var _this = this;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        super.draw(ctxt);
+        _super.prototype.draw.call(this, ctxt);
         this.canvas.getContext("2d").putImageData(this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height), 0, 0);
         if (this.isActive) {
-            this._reqAniFrameId = window.requestAnimationFrame(() => this.draw(canvasCtxt));
+            this._reqAniFrameId = window.requestAnimationFrame(function () { return _this.draw(canvasCtxt); });
         }
-    }
-    isHit() {
+    };
+    CanvasGroup.prototype.isHit = function () {
         return true;
-    }
-}
+    };
+    return CanvasGroup;
+}(Group_1.Group));
 exports.CanvasGroup = CanvasGroup;
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
 // requestAnimationFrame polyfill by Erik Möller
 // fixes from Paul Irish and Tino Zijdel
 (function () {
-    let lastTime = 0;
-    const vendors = ["ms", "moz", "webkit", "o"];
-    for (let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+    var lastTime = 0;
+    var vendors = ["ms", "moz", "webkit", "o"];
+    for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
         window.requestAnimationFrame = window[vendors[x] + "RequestAnimationFrame"];
         window.cancelAnimationFrame = window[vendors[x] + "CancelAnimationFrame"]
             || window[vendors[x] + "CancelRequestAnimationFrame"];
     }
     if (!window.requestAnimationFrame) {
         window.requestAnimationFrame = function (callback) {
-            const currTime = new Date().getTime();
-            const timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            const id = window.setTimeout(function () { callback(currTime + timeToCall); }, timeToCall);
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function () { callback(currTime + timeToCall); }, timeToCall);
             lastTime = currTime + timeToCall;
             return id;
         };
@@ -548,15 +703,15 @@ exports.CanvasGroup = CanvasGroup;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const DEG_TO_ANGLE = 0.017453; // Math.PI / 180
+var DEG_TO_ANGLE = 0.017453; // Math.PI / 180
 /**
  * Pixel-accurate Hit Area class.
  */
-class PixelHitArea {
+var PixelHitArea = (function () {
     /**
      * Creates an instance of class.
      */
-    constructor(width, height) {
+    function PixelHitArea(width, height) {
         // private shape: T;
         this.canvas = null;
         this.ctx = null;
@@ -568,7 +723,7 @@ class PixelHitArea {
     /**
      * Calculates if the x, y point is within the hit area.
      */
-    isHit(x, y, globalCtx, target) {
+    PixelHitArea.prototype.isHit = function (x, y, globalCtx, target) {
         if (this.canvas === null || this.ctx === null) {
             throw new ReferenceError("PixelHitArea was not initialized correctly.");
         }
@@ -583,15 +738,16 @@ class PixelHitArea {
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.restore();
         return this.ctx.getImageData(x, y, 1, 1).data[3] > 0;
-    }
+    };
     /**
      * Cleans up the instance.
      */
-    destroy() {
+    PixelHitArea.prototype.destroy = function () {
         this.canvas = null;
         this.ctx = null;
-    }
-}
+    };
+    return PixelHitArea;
+}());
 exports.PixelHitArea = PixelHitArea;
 //# sourceMappingURL=PixelHitArea.js.map
 
@@ -601,38 +757,64 @@ exports.PixelHitArea = PixelHitArea;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const interfaces_1 = __webpack_require__(2);
-const BaseStyle_1 = __webpack_require__(1);
-const DEG_TO_ANGLE = 0.017453; // Math.PI / 180
+var interfaces_1 = __webpack_require__(2);
+var BaseStyle_1 = __webpack_require__(1);
+var DEG_TO_ANGLE = 0.017453; // Math.PI / 180
 /**
  * Draws a filled and/or stroked arc.
  */
-class ArcShape extends BaseStyle_1.BaseStyle {
-    constructor(canvas, ctx, name = "Arc_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) {
-        super(canvas, ctx, name);
-        this._angleDegree = 180;
-        this._connectToCenter = false;
+var ArcShape = (function (_super) {
+    __extends(ArcShape, _super);
+    function ArcShape(canvas, ctx, name) {
+        if (name === void 0) { name = "Arc_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER); }
+        var _this = _super.call(this, canvas, ctx, name) || this;
+        _this._angleDegree = 180;
+        _this._connectToCenter = false;
+        return _this;
     }
-    get type() { return interfaces_1.ShapeType.LINE; }
-    set radius(r) {
-        this.boundary.reset();
-        this.boundary.setPoint([-r, -r]);
-        this.boundary.setPoint([r, r]);
-        if (this.originToCenter) {
-            this.originToCenter = true;
-        }
-    }
-    get radius() {
-        return this.width / 2;
-    }
-    set angle(deg) {
-        this._angleDegree = Math.max(0, Math.min(360, deg));
-    }
-    get angle() {
-        return this._angleDegree;
-    }
-    withRadius(r, duration = 0, tween, callback) {
+    Object.defineProperty(ArcShape.prototype, "type", {
+        get: function () { return interfaces_1.ShapeType.LINE; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ArcShape.prototype, "radius", {
+        get: function () {
+            return this.width / 2;
+        },
+        set: function (r) {
+            this.boundary.reset();
+            this.boundary.setPoint([-r, -r]);
+            this.boundary.setPoint([r, r]);
+            if (this.originToCenter) {
+                this.originToCenter = true;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ArcShape.prototype, "angle", {
+        get: function () {
+            return this._angleDegree;
+        },
+        set: function (deg) {
+            this._angleDegree = Math.max(0, Math.min(360, deg));
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ArcShape.prototype.withRadius = function (r, duration, tween, callback) {
+        if (duration === void 0) { duration = 0; }
         if (duration > 1) {
             this.tweenManager.addTween(this, tween, duration, [r], ["radius"], callback, 5);
         }
@@ -640,8 +822,9 @@ class ArcShape extends BaseStyle_1.BaseStyle {
             this.radius = r;
         }
         return this;
-    }
-    withAngle(deg, duration = 0, tween, callback) {
+    };
+    ArcShape.prototype.withAngle = function (deg, duration, tween, callback) {
+        if (duration === void 0) { duration = 0; }
         if (duration > 1) {
             this.tweenManager.addTween(this, tween, duration, [deg], ["angle"], callback, 10);
         }
@@ -649,12 +832,12 @@ class ArcShape extends BaseStyle_1.BaseStyle {
             this.angle = deg;
         }
         return this;
-    }
-    connectToCenter(c) {
+    };
+    ArcShape.prototype.connectToCenter = function (c) {
         this._connectToCenter = c;
         return this;
-    }
-    traceShape(ctx) {
+    };
+    ArcShape.prototype.traceShape = function (ctx) {
         ctx.beginPath();
         if (this._connectToCenter) {
             ctx.moveTo(0 - this.originX, 0 - this.originY);
@@ -669,17 +852,18 @@ class ArcShape extends BaseStyle_1.BaseStyle {
         if (this.styleManager.hasStroke) {
             ctx.stroke();
         }
-    }
-    clear() {
-        super.clear();
+    };
+    ArcShape.prototype.clear = function () {
+        _super.prototype.clear.call(this);
         this._angleDegree = 180;
         this._connectToCenter = false;
         return this;
-    }
-    customDraw() {
+    };
+    ArcShape.prototype.customDraw = function () {
         this.traceShape(this.ctx);
-    }
-}
+    };
+    return ArcShape;
+}(BaseStyle_1.BaseStyle));
 exports.ArcShape = ArcShape;
 //# sourceMappingURL=ArcShape.js.map
 
@@ -690,10 +874,10 @@ exports.ArcShape = ArcShape;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const PixelHitArea_1 = __webpack_require__(5);
-const TweenManager_1 = __webpack_require__(23);
-const Boundary_1 = __webpack_require__(17);
-const DEG_TO_ANGLE = 0.017453; // Math.PI / 180
+var PixelHitArea_1 = __webpack_require__(5);
+var TweenManager_1 = __webpack_require__(23);
+var Boundary_1 = __webpack_require__(17);
+var DEG_TO_ANGLE = 0.017453; // Math.PI / 180
 /**
  * BaseShape abstract class.
  *
@@ -703,8 +887,9 @@ const DEG_TO_ANGLE = 0.017453; // Math.PI / 180
  * protected boundary: Boundary
  * protected customDraw (ctxt?: ContextTransformer): void
  */
-class BaseShape {
-    constructor(canvas, ctx, _name = "Shape_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) {
+var BaseShape = (function () {
+    function BaseShape(canvas, ctx, _name) {
+        if (_name === void 0) { _name = "Shape_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER); }
         this.canvas = canvas;
         this.ctx = ctx;
         this._name = _name;
@@ -732,62 +917,132 @@ class BaseShape {
         this.tweenManager = new TweenManager_1.TweenManager();
         this.boundary = new Boundary_1.Boundary();
     }
-    get name() { return this._name; }
-    set x(v) { this._x = v; }
-    get x() { return this._x; }
-    set y(v) { this._y = v; }
-    get y() { return this._y; }
-    set width(v) {
-        const h = this.height;
-        this.boundary.reset();
-        this.boundary.setPoint([0, 0]);
-        this.boundary.setPoint([v, h]);
-        if (this._originToCenter) {
-            this.originToCenter = true;
-        }
-    }
-    get width() { return this.boundary.width; }
-    set height(v) {
-        const w = this.width;
-        this.boundary.reset();
-        this.boundary.setPoint([0, 0]);
-        this.boundary.setPoint([w, v]);
-        if (this._originToCenter) {
-            this.originToCenter = true;
-        }
-    }
-    get height() { return this.boundary.height; }
-    set originX(v) { this._originX = v; }
-    get originX() { return this._originX; }
-    set originY(v) { this._originY = v; }
-    get originY() { return this._originY; }
-    set rotation(v) { this._rotation = v; }
-    get rotation() { return this._rotation; }
-    set scaleX(v) { this._scaleX = v; }
-    get scaleX() { return this._scaleX; }
-    set scaleY(v) { this._scaleY = v; }
-    get scaleY() { return this._scaleY; }
-    set skewX(v) { this._skewX = v; }
-    get skewX() { return this._skewX; }
-    set skewY(v) { this._skewY = v; }
-    get skewY() { return this._skewY; }
-    set isActive(v) { this._isActive = v; }
-    get isActive() { return this._isActive; }
-    set isVisible(v) { this._isVisible = v; }
-    get isVisible() { return this._isVisible; }
-    set originToCenter(v) {
-        this._originToCenter = v;
-        if (v) {
-            [this.originX, this.originY] = this.boundary.center;
-        }
-    }
-    get originToCenter() { return this._originToCenter; }
-    getBoundary() {
+    Object.defineProperty(BaseShape.prototype, "name", {
+        get: function () { return this._name; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseShape.prototype, "x", {
+        get: function () { return this._x; },
+        set: function (v) { this._x = v; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseShape.prototype, "y", {
+        get: function () { return this._y; },
+        set: function (v) { this._y = v; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseShape.prototype, "width", {
+        get: function () { return this.boundary.width; },
+        set: function (v) {
+            var h = this.height;
+            this.boundary.reset();
+            this.boundary.setPoint([0, 0]);
+            this.boundary.setPoint([v, h]);
+            if (this._originToCenter) {
+                this.originToCenter = true;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseShape.prototype, "height", {
+        get: function () { return this.boundary.height; },
+        set: function (v) {
+            var w = this.width;
+            this.boundary.reset();
+            this.boundary.setPoint([0, 0]);
+            this.boundary.setPoint([w, v]);
+            if (this._originToCenter) {
+                this.originToCenter = true;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseShape.prototype, "originX", {
+        get: function () { return this._originX; },
+        set: function (v) { this._originX = v; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseShape.prototype, "originY", {
+        get: function () { return this._originY; },
+        set: function (v) { this._originY = v; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseShape.prototype, "rotation", {
+        get: function () { return this._rotation; },
+        set: function (v) { this._rotation = v; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseShape.prototype, "scaleX", {
+        get: function () { return this._scaleX; },
+        set: function (v) { this._scaleX = v; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseShape.prototype, "scaleY", {
+        get: function () { return this._scaleY; },
+        set: function (v) { this._scaleY = v; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseShape.prototype, "skewX", {
+        get: function () { return this._skewX; },
+        set: function (v) { this._skewX = v; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseShape.prototype, "skewY", {
+        get: function () { return this._skewY; },
+        set: function (v) { this._skewY = v; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseShape.prototype, "isActive", {
+        get: function () { return this._isActive; },
+        set: function (v) { this._isActive = v; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseShape.prototype, "isVisible", {
+        get: function () { return this._isVisible; },
+        set: function (v) { this._isVisible = v; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseShape.prototype, "originToCenter", {
+        get: function () { return this._originToCenter; },
+        set: function (v) {
+            this._originToCenter = v;
+            if (v) {
+                _a = this.boundary.center, this.originX = _a[0], this.originY = _a[1];
+            }
+            var _a;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BaseShape.prototype.getBoundary = function () {
         return this.boundary.clone();
-    }
-    get hitArea() { return this._hitArea; }
-    get contextTransform() { return Object.assign({}, this._currentCtxt); }
-    origin(x, y, duration = 0, tween, callback) {
+    };
+    Object.defineProperty(BaseShape.prototype, "hitArea", {
+        get: function () { return this._hitArea; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseShape.prototype, "contextTransform", {
+        get: function () { return Object.assign({}, this._currentCtxt); },
+        enumerable: true,
+        configurable: true
+    });
+    BaseShape.prototype.origin = function (x, y, duration, tween, callback) {
+        if (duration === void 0) { duration = 0; }
         if (duration > 1) {
             this.tweenManager.addTween(this, tween, duration, [x, y], ["originX", "originY"], callback, 4);
         }
@@ -796,8 +1051,10 @@ class BaseShape {
             this.originY = y;
         }
         return this;
-    }
-    resize(w, h = w, duration = 0, tween, callback) {
+    };
+    BaseShape.prototype.resize = function (w, h, duration, tween, callback) {
+        if (h === void 0) { h = w; }
+        if (duration === void 0) { duration = 0; }
         if (duration > 1) {
             this.tweenManager.addTween(this, tween, duration, [w, h], ["width", "height"], callback, 5);
         }
@@ -806,8 +1063,9 @@ class BaseShape {
             this.height = h;
         }
         return this;
-    }
-    rotate(deg, duration = 0, tween, callback) {
+    };
+    BaseShape.prototype.rotate = function (deg, duration, tween, callback) {
+        if (duration === void 0) { duration = 0; }
         if (duration > 1) {
             this.tweenManager.addTween(this, tween, duration, [this.rotation + deg], ["rotation"], callback);
         }
@@ -815,8 +1073,10 @@ class BaseShape {
             this.rotation += deg;
         }
         return this;
-    }
-    scale(x, y = x, duration = 0, tween, callback) {
+    };
+    BaseShape.prototype.scale = function (x, y, duration, tween, callback) {
+        if (y === void 0) { y = x; }
+        if (duration === void 0) { duration = 0; }
         if (duration > 1) {
             this.tweenManager.addTween(this, tween, duration, [this.scaleX * x, this.scaleY * y], ["scaleX", "scaleY"], callback, 20);
         }
@@ -825,8 +1085,10 @@ class BaseShape {
             this.scaleY *= y;
         }
         return this;
-    }
-    skew(x, y = x, duration = 0, tween, callback) {
+    };
+    BaseShape.prototype.skew = function (x, y, duration, tween, callback) {
+        if (y === void 0) { y = x; }
+        if (duration === void 0) { duration = 0; }
         if (duration > 1) {
             this.tweenManager.addTween(this, tween, duration, [this.skewX + x, this.skewY + y], ["skewX", "skewY"], callback, 9);
         }
@@ -835,8 +1097,9 @@ class BaseShape {
             this.skewY += y;
         }
         return this;
-    }
-    translate(x, y, duration = 0, tween, callback) {
+    };
+    BaseShape.prototype.translate = function (x, y, duration, tween, callback) {
+        if (duration === void 0) { duration = 0; }
         if (duration > 1) {
             this.tweenManager.addTween(this, tween, duration, [this.x + x, this.y + y], ["x", "y"], callback, 1);
         }
@@ -845,14 +1108,15 @@ class BaseShape {
             this.y += y;
         }
         return this;
-    }
-    draw(ctxt) {
+    };
+    BaseShape.prototype.draw = function (ctxt) {
+        var _this = this;
         if (this.isActive) {
             if (this._aniFunc !== null && !this._aniFunc(this)) {
                 this._aniFunc = null;
             }
             this.tweenManager.tween();
-            this._constraints.forEach(c => c(this));
+            this._constraints.forEach(function (c) { return c(_this); });
         }
         if (this.isVisible) {
             this._currentCtxt.scaleX = ctxt.scaleX * this.scaleX;
@@ -865,7 +1129,7 @@ class BaseShape {
             this.ctx.setTransform(this._currentCtxt.scaleX, this._currentCtxt.skewX, this._currentCtxt.skewY, this._currentCtxt.scaleY, this._currentCtxt.moveX, this._currentCtxt.moveY);
             this.ctx.rotate(this._currentCtxt.rotate * DEG_TO_ANGLE);
             if (this._clipShape !== undefined) {
-                const c = this._clipShape;
+                var c = this._clipShape;
                 // this.ctx.save();
                 this.ctx.setTransform(this._currentCtxt.scaleX * c.scaleX, this._currentCtxt.skewX + (c.skewX * DEG_TO_ANGLE), this._currentCtxt.skewY + (c.skewY * DEG_TO_ANGLE), this._currentCtxt.scaleY * c.scaleY, this._currentCtxt.moveX + c.x, this._currentCtxt.moveY + c.y);
                 this.ctx.rotate(c.rotation * DEG_TO_ANGLE);
@@ -877,86 +1141,95 @@ class BaseShape {
             }
             this.customDraw(this._currentCtxt);
         }
-    }
-    setAnimationFunction(f) {
+    };
+    BaseShape.prototype.setAnimationFunction = function (f) {
         this._aniFunc = f;
-    }
-    removeAnimationFunction() {
+    };
+    BaseShape.prototype.removeAnimationFunction = function () {
         this._aniFunc = null;
-    }
-    isHit(x, y) {
+    };
+    BaseShape.prototype.isHit = function (x, y) {
         if (this.hitArea === undefined) {
             return false;
         }
         return this.hitArea.isHit(x, y, this._currentCtxt, this);
-    }
-    withClip(clipShape) {
+    };
+    BaseShape.prototype.withClip = function (clipShape) {
         this._clipShape = clipShape;
         return this;
-    }
-    withConstraint(...func) {
+    };
+    BaseShape.prototype.withConstraint = function () {
+        var func = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            func[_i] = arguments[_i];
+        }
         this._constraints = func;
         return this;
-    }
-    withHitArea(...args) {
-        const Clazz = args[0];
+    };
+    BaseShape.prototype.withHitArea = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        var Clazz = args[0];
         if (Clazz === PixelHitArea_1.PixelHitArea && args[1] !== undefined) {
             this._hitArea = new PixelHitArea_1.PixelHitArea(this.canvas.width, this.canvas.height);
         }
         else if (typeof Clazz === "function") {
-            const offset = args[1] || 1;
+            var offset = args[1] || 1;
             this._hitArea = new Clazz(this.canvas.width, this.canvas.height, offset);
         }
         else {
             throw new ReferenceError("The first parameter must implement the IHitArea interface.");
         }
         return this;
-    }
-    addEventListener(event, listener) {
+    };
+    BaseShape.prototype.addEventListener = function (event, listener) {
+        var _this = this;
         this.removeEventListener(event);
-        const rect = this.canvas.getBoundingClientRect();
+        var rect = this.canvas.getBoundingClientRect();
         if (event === "click" || event === "dblclick") {
-            this.canvas.addEventListener(event, this._eventHandlers[event] = (evt) => {
-                const clientX = evt.clientX - rect.left, clientY = evt.clientY - rect.top;
-                if (this.isVisible && this.isHit(clientX, clientY)) {
+            this.canvas.addEventListener(event, this._eventHandlers[event] = function (evt) {
+                var clientX = evt.clientX - rect.left, clientY = evt.clientY - rect.top;
+                if (_this.isVisible && _this.isHit(clientX, clientY)) {
                     listener(evt);
                 }
             }, false);
         }
         else if (event === "wheel") {
-            this.canvas.addEventListener(event, this._eventHandlers.wheel = (evt) => {
-                const clientX = evt.clientX - rect.left, clientY = evt.clientY - rect.top;
-                if (this.isVisible && this.isHit(clientX, clientY)) {
+            this.canvas.addEventListener(event, this._eventHandlers.wheel = function (evt) {
+                var clientX = evt.clientX - rect.left, clientY = evt.clientY - rect.top;
+                if (_this.isVisible && _this.isHit(clientX, clientY)) {
                     listener(evt);
                 }
             }, false);
         }
         else if (event === "mouseenter" || event === "mouseleave") {
-            this._eventHandlers[event] = (evt) => listener(evt);
+            this._eventHandlers[event] = function (evt) { return listener(evt); };
             if ("mousemove" in this._eventHandlers === false) {
-                let isOver = false;
-                this.canvas.addEventListener("mousemove", this._eventHandlers.mousemove = (evt) => {
-                    const clientX = evt.clientX - rect.left, clientY = evt.clientY - rect.top;
-                    const isHit = this.isVisible && this.isHit(clientX, clientY);
-                    if (isOver && !isHit) {
-                        this.canvas.style.cursor = "default";
-                        isOver = false;
-                        if ("mouseleave" in this._eventHandlers) {
-                            this._eventHandlers.mouseleave(evt);
+                var isOver_1 = false;
+                this.canvas.addEventListener("mousemove", this._eventHandlers.mousemove = function (evt) {
+                    var clientX = evt.clientX - rect.left, clientY = evt.clientY - rect.top;
+                    var isHit = _this.isVisible && _this.isHit(clientX, clientY);
+                    if (isOver_1 && !isHit) {
+                        _this.canvas.style.cursor = "default";
+                        isOver_1 = false;
+                        if ("mouseleave" in _this._eventHandlers) {
+                            _this._eventHandlers.mouseleave(evt);
                         }
                     }
-                    else if (!isOver && isHit) {
-                        this.canvas.style.cursor = "pointer";
-                        isOver = true;
-                        if ("mouseenter" in this._eventHandlers) {
-                            this._eventHandlers.mouseenter(evt);
+                    else if (!isOver_1 && isHit) {
+                        _this.canvas.style.cursor = "pointer";
+                        isOver_1 = true;
+                        if ("mouseenter" in _this._eventHandlers) {
+                            _this._eventHandlers.mouseenter(evt);
                         }
                     }
                 }, false);
             }
         }
-    }
-    removeEventListener(event) {
+    };
+    BaseShape.prototype.removeEventListener = function (event) {
         if (event in this._eventHandlers) {
             this.canvas.removeEventListener(event, this._eventHandlers[event]);
             delete this._eventHandlers[event];
@@ -965,15 +1238,16 @@ class BaseShape {
             this.canvas.removeEventListener("mousemove", this._eventHandlers.mousemove);
             delete this._eventHandlers.mousemove;
         }
-    }
-    clear() {
+    };
+    BaseShape.prototype.clear = function () {
         this._originX = 0;
         this._originY = 0;
         this.tweenManager.clear();
         this.boundary.reset();
         return this;
-    }
-}
+    };
+    return BaseShape;
+}());
 exports.BaseShape = BaseShape;
 //# sourceMappingURL=BaseShape.js.map
 
@@ -983,28 +1257,57 @@ exports.BaseShape = BaseShape;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const BaseStyle_1 = __webpack_require__(1);
-const interfaces_1 = __webpack_require__(2);
-const Boundary_1 = __webpack_require__(17);
+var BaseStyle_1 = __webpack_require__(1);
+var interfaces_1 = __webpack_require__(2);
+var Boundary_1 = __webpack_require__(17);
 /**
  * Draws a stroked line.
  */
-class BezierCurveShape extends BaseStyle_1.BaseStyle {
-    constructor(canvas, ctx, name = "BezierCurve_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) {
-        super(canvas, ctx, name);
-        this._curves = [];
-        this._boundary = new Boundary_1.Boundary();
+var BezierCurveShape = (function (_super) {
+    __extends(BezierCurveShape, _super);
+    function BezierCurveShape(canvas, ctx, name) {
+        if (name === void 0) { name = "BezierCurve_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER); }
+        var _this = _super.call(this, canvas, ctx, name) || this;
+        _this._curves = [];
+        _this._boundary = new Boundary_1.Boundary();
+        return _this;
     }
-    get type() { return interfaces_1.ShapeType.LINE; }
-    get width() { return this._boundary.width; }
-    get height() { return this._boundary.height; }
-    get numCurves() {
-        return this._curves.length;
-    }
-    addCurve(curve) {
+    Object.defineProperty(BezierCurveShape.prototype, "type", {
+        get: function () { return interfaces_1.ShapeType.LINE; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BezierCurveShape.prototype, "width", {
+        get: function () { return this._boundary.width; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BezierCurveShape.prototype, "height", {
+        get: function () { return this._boundary.height; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BezierCurveShape.prototype, "numCurves", {
+        get: function () {
+            return this._curves.length;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BezierCurveShape.prototype.addCurve = function (curve) {
         this._curves.push(curve);
-        const [p1, cp1, cp2, p2] = curve;
+        var p1 = curve[0], cp1 = curve[1], cp2 = curve[2], p2 = curve[3];
         this._boundary.setPoint(p1);
         this._boundary.setPoint(p2);
         this._boundary.setPoint([(p1[0] + cp1[0] + cp2[0] + p2[0]) / 4, (p1[0] + cp1[0] + cp2[0] + p2[0]) / 4]);
@@ -1012,22 +1315,26 @@ class BezierCurveShape extends BaseStyle_1.BaseStyle {
             this.originToCenter = true;
         }
         return this;
-    }
-    clear() {
-        super.clear();
+    };
+    BezierCurveShape.prototype.clear = function () {
+        _super.prototype.clear.call(this);
         this._curves = [];
         return this;
-    }
-    traceShape(ctx) {
+    };
+    BezierCurveShape.prototype.traceShape = function (ctx) {
+        var _this = this;
         if (this._curves.length < 1) {
-            throw new ReferenceError(`BezierCurveShape (${this.name}) must have at least one Point.`);
+            throw new ReferenceError("BezierCurveShape (" + this.name + ") must have at least one Point.");
         }
-        const [[[x, y], [x2, y2], [x3, y3], [x4, y4]], ...curvesTo] = this._curves;
+        var _a = this._curves, _b = _a[0], _c = _b[0], x = _c[0], y = _c[1], _d = _b[1], x2 = _d[0], y2 = _d[1], _e = _b[2], x3 = _e[0], y3 = _e[1], _f = _b[3], x4 = _f[0], y4 = _f[1], curvesTo = _a.slice(1);
         ctx.beginPath();
         ctx.moveTo(x - this.originX, y - this.originY);
         ctx.bezierCurveTo(x2 - this.originX, y2 - this.originY, x3 - this.originX, y3 - this.originY, x4 - this.originX, y4 - this.originY);
         if (curvesTo !== undefined) {
-            curvesTo.forEach(([, [_x2, _y2], [_x3, _y3], [_x4, _y4]]) => ctx.bezierCurveTo(_x2 - this.originX, _y2 - this.originY, _x3 - this.originX, _y3 - this.originY, _x4 - this.originX, _y4 - this.originY));
+            curvesTo.forEach(function (_a) {
+                var _b = _a[1], _x2 = _b[0], _y2 = _b[1], _c = _a[2], _x3 = _c[0], _y3 = _c[1], _d = _a[3], _x4 = _d[0], _y4 = _d[1];
+                return ctx.bezierCurveTo(_x2 - _this.originX, _y2 - _this.originY, _x3 - _this.originX, _y3 - _this.originY, _x4 - _this.originX, _y4 - _this.originY);
+            });
         }
         if (this.styleManager.hasFill) {
             ctx.fill();
@@ -1035,11 +1342,12 @@ class BezierCurveShape extends BaseStyle_1.BaseStyle {
         if (this.styleManager.hasStroke) {
             ctx.stroke();
         }
-    }
-    customDraw() {
+    };
+    BezierCurveShape.prototype.customDraw = function () {
         this.traceShape(this.ctx);
-    }
-}
+    };
+    return BezierCurveShape;
+}(BaseStyle_1.BaseStyle));
 exports.BezierCurveShape = BezierCurveShape;
 //# sourceMappingURL=BezierCurveShape.js.map
 
@@ -1049,32 +1357,61 @@ exports.BezierCurveShape = BezierCurveShape;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const interfaces_1 = __webpack_require__(2);
-const BaseStyle_1 = __webpack_require__(1);
-const MathPIx2 = 6.2832; // 2 * Math.PI;
+var interfaces_1 = __webpack_require__(2);
+var BaseStyle_1 = __webpack_require__(1);
+var MathPIx2 = 6.2832; // 2 * Math.PI;
 /**
  * Draws a filled and/or stroked circle.
  */
-class CircleShape extends BaseStyle_1.BaseStyle {
-    constructor(canvas, ctx, name = "Circle_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) {
-        super(canvas, ctx, name);
+var CircleShape = (function (_super) {
+    __extends(CircleShape, _super);
+    function CircleShape(canvas, ctx, name) {
+        if (name === void 0) { name = "Circle_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER); }
+        return _super.call(this, canvas, ctx, name) || this;
     }
-    get type() { return interfaces_1.ShapeType.SHAPE; }
-    set width(v) { throw new ReferenceError(`LineShape width cannot be set (${v}).`); }
-    set height(v) { throw new ReferenceError(`LineShape height cannot be set (${v}).`); }
-    set radius(r) {
-        this.boundary.reset();
-        this.boundary.setPoint([-r, -r]);
-        this.boundary.setPoint([r, r]);
-        if (this.originToCenter) {
-            this.originToCenter = true;
-        }
-    }
-    get radius() {
-        return super.width / 2;
-    }
-    withRadius(r, duration = 0, tween, callback) {
+    Object.defineProperty(CircleShape.prototype, "type", {
+        get: function () { return interfaces_1.ShapeType.SHAPE; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CircleShape.prototype, "width", {
+        set: function (v) { throw new ReferenceError("LineShape width cannot be set (" + v + ")."); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CircleShape.prototype, "height", {
+        set: function (v) { throw new ReferenceError("LineShape height cannot be set (" + v + ")."); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CircleShape.prototype, "radius", {
+        get: function () {
+            return this.x / 2;
+        },
+        set: function (r) {
+            this.boundary.reset();
+            this.boundary.setPoint([-r, -r]);
+            this.boundary.setPoint([r, r]);
+            if (this.originToCenter) {
+                this.originToCenter = true;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    CircleShape.prototype.withRadius = function (r, duration, tween, callback) {
+        if (duration === void 0) { duration = 0; }
         if (duration > 1) {
             this.tweenManager.addTween(this, tween, duration, [r], ["radius"], callback, 5);
         }
@@ -1082,8 +1419,8 @@ class CircleShape extends BaseStyle_1.BaseStyle {
             this.radius = r;
         }
         return this;
-    }
-    traceShape(ctx) {
+    };
+    CircleShape.prototype.traceShape = function (ctx) {
         ctx.beginPath();
         ctx.arc(0 - this.originX, 0 - this.originY, this.radius, 0, MathPIx2);
         if (this.styleManager.hasFill) {
@@ -1092,11 +1429,12 @@ class CircleShape extends BaseStyle_1.BaseStyle {
         if (this.styleManager.hasStroke) {
             ctx.stroke();
         }
-    }
-    customDraw() {
+    };
+    CircleShape.prototype.customDraw = function () {
         this.traceShape(this.ctx);
-    }
-}
+    };
+    return CircleShape;
+}(BaseStyle_1.BaseStyle));
 exports.CircleShape = CircleShape;
 //# sourceMappingURL=CircleShape.js.map
 
@@ -1106,35 +1444,53 @@ exports.CircleShape = CircleShape;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const BaseStyle_1 = __webpack_require__(1);
-const interfaces_1 = __webpack_require__(2);
+var BaseStyle_1 = __webpack_require__(1);
+var interfaces_1 = __webpack_require__(2);
 /**
  * Draws a filled and/or stroked line of text.
  */
-class ImageShape extends BaseStyle_1.BaseStyle {
-    constructor(canvas, ctx, name = "Image_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) {
-        super(canvas, ctx, name);
+var ImageShape = (function (_super) {
+    __extends(ImageShape, _super);
+    function ImageShape(canvas, ctx, name) {
+        if (name === void 0) { name = "Image_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER); }
+        return _super.call(this, canvas, ctx, name) || this;
     }
-    get type() { return interfaces_1.ShapeType.IMAGE; }
-    withImage(img, callback) {
+    Object.defineProperty(ImageShape.prototype, "type", {
+        get: function () { return interfaces_1.ShapeType.IMAGE; },
+        enumerable: true,
+        configurable: true
+    });
+    ImageShape.prototype.withImage = function (img, callback) {
+        var _this = this;
         this._image = new Image();
         this._image.src = img;
         if (callback !== undefined) {
-            this._image.addEventListener("load", () => callback(this));
+            this._image.addEventListener("load", function () { return callback(_this); });
         }
         return this;
-    }
-    getImage() {
+    };
+    ImageShape.prototype.getImage = function () {
         return this._image;
-    }
-    traceShape(ctx) {
+    };
+    ImageShape.prototype.traceShape = function (ctx) {
         ctx.fillRect(0 - this.originX, 0 - this.originY, this.width, this.height);
-    }
-    customDraw() {
+    };
+    ImageShape.prototype.customDraw = function () {
         this.ctx.drawImage(this._image, 0 - this.originX, 0 - this.originY, this.width, this.height);
-    }
-}
+    };
+    return ImageShape;
+}(BaseStyle_1.BaseStyle));
 exports.ImageShape = ImageShape;
 //# sourceMappingURL=ImageShape.js.map
 
@@ -1144,21 +1500,46 @@ exports.ImageShape = ImageShape;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const BaseStyle_1 = __webpack_require__(1);
-const interfaces_1 = __webpack_require__(2);
+var BaseStyle_1 = __webpack_require__(1);
+var interfaces_1 = __webpack_require__(2);
 /**
  * Draws a stroked line.
  */
-class LineShape extends BaseStyle_1.BaseStyle {
-    constructor(canvas, ctx, name = "Line_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) {
-        super(canvas, ctx, name);
-        this._linePoints = [];
+var LineShape = (function (_super) {
+    __extends(LineShape, _super);
+    function LineShape(canvas, ctx, name) {
+        if (name === void 0) { name = "Line_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER); }
+        var _this = _super.call(this, canvas, ctx, name) || this;
+        _this._linePoints = [];
+        return _this;
     }
-    get type() { return interfaces_1.ShapeType.LINE; }
-    set width(v) { throw new ReferenceError(`LineShape width cannot be set (${v}).`); }
-    set height(v) { throw new ReferenceError(`LineShape height cannot be set (${v}).`); }
-    addLine(line) {
+    Object.defineProperty(LineShape.prototype, "type", {
+        get: function () { return interfaces_1.ShapeType.LINE; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LineShape.prototype, "width", {
+        set: function (v) { throw new ReferenceError("LineShape width cannot be set (" + v + ")."); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LineShape.prototype, "height", {
+        set: function (v) { throw new ReferenceError("LineShape height cannot be set (" + v + ")."); },
+        enumerable: true,
+        configurable: true
+    });
+    LineShape.prototype.addLine = function (line) {
         this._linePoints.push(line);
         this.boundary.setPoint(line[0]);
         this.boundary.setPoint(line[1]);
@@ -1166,22 +1547,24 @@ class LineShape extends BaseStyle_1.BaseStyle {
             this.originToCenter = true;
         }
         return this;
-    }
-    clear() {
-        super.clear();
+    };
+    LineShape.prototype.clear = function () {
+        _super.prototype.clear.call(this);
         this._linePoints = [];
         return this;
-    }
-    traceShape(ctx) {
+    };
+    LineShape.prototype.traceShape = function (ctx) {
+        var _this = this;
         if (this._linePoints.length < 1) {
-            throw new ReferenceError(`LineShape (${this.name}) must have at least one line.`);
+            throw new ReferenceError("LineShape (" + this.name + ") must have at least one line.");
         }
         ctx.beginPath();
-        this._linePoints.forEach(([[x, y], [x2, y2]], i) => {
+        this._linePoints.forEach(function (_a, i) {
+            var _b = _a[0], x = _b[0], y = _b[1], _c = _a[1], x2 = _c[0], y2 = _c[1];
             if (i === 0) {
-                ctx.moveTo(x - this.originX, y - this.originY);
+                ctx.moveTo(x - _this.originX, y - _this.originY);
             }
-            ctx.lineTo(x2 - this.originX, y2 - this.originY);
+            ctx.lineTo(x2 - _this.originX, y2 - _this.originY);
         });
         if (this.styleManager.hasFill) {
             ctx.fill();
@@ -1189,11 +1572,12 @@ class LineShape extends BaseStyle_1.BaseStyle {
         if (this.styleManager.hasStroke) {
             ctx.stroke();
         }
-    }
-    customDraw() {
+    };
+    LineShape.prototype.customDraw = function () {
         this.traceShape(this.ctx);
-    }
-}
+    };
+    return LineShape;
+}(BaseStyle_1.BaseStyle));
 exports.LineShape = LineShape;
 //# sourceMappingURL=LineShape.js.map
 
@@ -1203,21 +1587,46 @@ exports.LineShape = LineShape;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const interfaces_1 = __webpack_require__(2);
-const BaseStyle_1 = __webpack_require__(1);
+var interfaces_1 = __webpack_require__(2);
+var BaseStyle_1 = __webpack_require__(1);
 /**
  * Draws a filled and/or stroked polygon.
  */
-class PolyShape extends BaseStyle_1.BaseStyle {
-    constructor(canvas, ctx, name = "PolyShape_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) {
-        super(canvas, ctx, name);
-        this._sidesCollection = [];
+var PolyShape = (function (_super) {
+    __extends(PolyShape, _super);
+    function PolyShape(canvas, ctx, name) {
+        if (name === void 0) { name = "PolyShape_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER); }
+        var _this = _super.call(this, canvas, ctx, name) || this;
+        _this._sidesCollection = [];
+        return _this;
     }
-    get type() { return interfaces_1.ShapeType.SHAPE; }
-    get width() { return this.boundary.width; }
-    get height() { return this.boundary.height; }
-    addLine(line) {
+    Object.defineProperty(PolyShape.prototype, "type", {
+        get: function () { return interfaces_1.ShapeType.SHAPE; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PolyShape.prototype, "width", {
+        get: function () { return this.boundary.width; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PolyShape.prototype, "height", {
+        get: function () { return this.boundary.height; },
+        enumerable: true,
+        configurable: true
+    });
+    PolyShape.prototype.addLine = function (line) {
         this._sidesCollection.push(line);
         this.boundary.setPoint(line[0]);
         this.boundary.setPoint(line[1]);
@@ -1225,10 +1634,10 @@ class PolyShape extends BaseStyle_1.BaseStyle {
             this.originToCenter = true;
         }
         return this;
-    }
-    addBezier(curve) {
+    };
+    PolyShape.prototype.addBezier = function (curve) {
         this._sidesCollection.push(curve);
-        const [p1, cp1, cp2, p2] = curve;
+        var p1 = curve[0], cp1 = curve[1], cp2 = curve[2], p2 = curve[3];
         this.boundary.setPoint(p1);
         this.boundary.setPoint(p2);
         this.boundary.setPoint([(p1[0] + cp1[0] + cp2[0] + p2[0]) / 4, (p1[0] + cp1[0] + cp2[0] + p2[0]) / 4]);
@@ -1236,10 +1645,10 @@ class PolyShape extends BaseStyle_1.BaseStyle {
             this.originToCenter = true;
         }
         return this;
-    }
-    addQuadratic(curve) {
+    };
+    PolyShape.prototype.addQuadratic = function (curve) {
         this._sidesCollection.push(curve);
-        const [p1, cp1, p2] = curve;
+        var p1 = curve[0], cp1 = curve[1], p2 = curve[2];
         this.boundary.setPoint(p1);
         this.boundary.setPoint(p2);
         this.boundary.setPoint([(p1[0] + cp1[0] + p2[0]) / 3, (p1[0] + cp1[0] + p2[0]) / 3]);
@@ -1247,34 +1656,35 @@ class PolyShape extends BaseStyle_1.BaseStyle {
             this.originToCenter = true;
         }
         return this;
-    }
-    clear() {
+    };
+    PolyShape.prototype.clear = function () {
         this.boundary.reset();
         this._sidesCollection = [];
         return this;
-    }
-    traceShape(ctx) {
+    };
+    PolyShape.prototype.traceShape = function (ctx) {
+        var _this = this;
         if (this._sidesCollection.length < 2) {
-            throw new ReferenceError(`PolyShape (${this.name}) must have at least two sides.`);
+            throw new ReferenceError("PolyShape (" + this.name + ") must have at least two sides.");
         }
-        const [[x, y],] = this._sidesCollection[0];
+        var _a = this._sidesCollection[0][0], x = _a[0], y = _a[1];
         ctx.beginPath();
         ctx.moveTo(x - this.originX, y - this.originY);
-        this._sidesCollection.forEach(s => {
+        this._sidesCollection.forEach(function (s) {
             // Line
             if (s.length === 2) {
-                const [, [x2, y2]] = s;
-                ctx.lineTo(x2 - this.originX, y2 - this.originY);
+                var _a = s[1], x2 = _a[0], y2 = _a[1];
+                ctx.lineTo(x2 - _this.originX, y2 - _this.originY);
                 // Quadratic
             }
             else if (s.length === 3) {
-                const [, [x2, y2], [x3, y3]] = s.slice(0, 3);
-                ctx.quadraticCurveTo(x2 - this.originX, y2 - this.originY, x3 - this.originX, y3 - this.originY);
+                var _b = s.slice(0, 3), _c = _b[1], x2 = _c[0], y2 = _c[1], _d = _b[2], x3 = _d[0], y3 = _d[1];
+                ctx.quadraticCurveTo(x2 - _this.originX, y2 - _this.originY, x3 - _this.originX, y3 - _this.originY);
                 // Bezier
             }
             else if (s.length === 4) {
-                const [, [x2, y2], [x3, y3], [x4, y4]] = s.slice(0, 4);
-                ctx.bezierCurveTo(x2 - this.originX, y2 - this.originY, x3 - this.originX, y3 - this.originY, x4 - this.originX, y4 - this.originY);
+                var _e = s.slice(0, 4), _f = _e[1], x2 = _f[0], y2 = _f[1], _g = _e[2], x3 = _g[0], y3 = _g[1], _h = _e[3], x4 = _h[0], y4 = _h[1];
+                ctx.bezierCurveTo(x2 - _this.originX, y2 - _this.originY, x3 - _this.originX, y3 - _this.originY, x4 - _this.originX, y4 - _this.originY);
             }
         });
         ctx.closePath();
@@ -1284,11 +1694,12 @@ class PolyShape extends BaseStyle_1.BaseStyle {
         if (this.styleManager.hasStroke) {
             ctx.stroke();
         }
-    }
-    customDraw() {
+    };
+    PolyShape.prototype.customDraw = function () {
         this.traceShape(this.ctx);
-    }
-}
+    };
+    return PolyShape;
+}(BaseStyle_1.BaseStyle));
 exports.PolyShape = PolyShape;
 //# sourceMappingURL=PolyShape.js.map
 
@@ -1298,24 +1709,45 @@ exports.PolyShape = PolyShape;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const BaseStyle_1 = __webpack_require__(1);
-const interfaces_1 = __webpack_require__(2);
+var BaseStyle_1 = __webpack_require__(1);
+var interfaces_1 = __webpack_require__(2);
 /**
  * Draws a stroked line.
  */
-class QuadraticCurveShape extends BaseStyle_1.BaseStyle {
-    constructor(canvas, ctx, name = "QuadraticCurve_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) {
-        super(canvas, ctx, name);
-        this._curves = [];
+var QuadraticCurveShape = (function (_super) {
+    __extends(QuadraticCurveShape, _super);
+    function QuadraticCurveShape(canvas, ctx, name) {
+        if (name === void 0) { name = "QuadraticCurve_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER); }
+        var _this = _super.call(this, canvas, ctx, name) || this;
+        _this._curves = [];
+        return _this;
     }
-    get type() { return interfaces_1.ShapeType.SHAPE; }
-    get numCurves() {
-        return this._curves.length;
-    }
-    addCurve(curve) {
+    Object.defineProperty(QuadraticCurveShape.prototype, "type", {
+        get: function () { return interfaces_1.ShapeType.SHAPE; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(QuadraticCurveShape.prototype, "numCurves", {
+        get: function () {
+            return this._curves.length;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    QuadraticCurveShape.prototype.addCurve = function (curve) {
         this._curves.push(curve);
-        const [p1, cp1, p2] = curve;
+        var p1 = curve[0], cp1 = curve[1], p2 = curve[2];
         this.boundary.setPoint(p1);
         this.boundary.setPoint(p2);
         this.boundary.setPoint([(p1[0] + cp1[0] + p2[0]) / 3, (p1[0] + cp1[0] + p2[0]) / 3]);
@@ -1323,22 +1755,26 @@ class QuadraticCurveShape extends BaseStyle_1.BaseStyle {
             this.originToCenter = true;
         }
         return this;
-    }
-    clear() {
-        super.clear();
+    };
+    QuadraticCurveShape.prototype.clear = function () {
+        _super.prototype.clear.call(this);
         this._curves = [];
         return this;
-    }
-    traceShape(ctx) {
+    };
+    QuadraticCurveShape.prototype.traceShape = function (ctx) {
+        var _this = this;
         if (this._curves.length < 1) {
-            throw new ReferenceError(`QuadraticCurveShape (${this.name}) must have at least one Point.`);
+            throw new ReferenceError("QuadraticCurveShape (" + this.name + ") must have at least one Point.");
         }
-        const [[[x, y], [x2, y2], [x3, y3]], ...curvesTo] = this._curves;
+        var _a = this._curves, _b = _a[0], _c = _b[0], x = _c[0], y = _c[1], _d = _b[1], x2 = _d[0], y2 = _d[1], _e = _b[2], x3 = _e[0], y3 = _e[1], curvesTo = _a.slice(1);
         ctx.beginPath();
         ctx.moveTo(x - this.originX, y - this.originY);
         ctx.quadraticCurveTo(x2 - this.originX, y2 - this.originY, x3 - this.originX, y3 - this.originY);
         if (curvesTo !== undefined) {
-            curvesTo.forEach(([, [_x2, _y2], [_x3, _y3]]) => ctx.quadraticCurveTo(_x2 - this.originX, _y2 - this.originY, _x3 - this.originX, _y3 - this.originY));
+            curvesTo.forEach(function (_a) {
+                var _b = _a[1], _x2 = _b[0], _y2 = _b[1], _c = _a[2], _x3 = _c[0], _y3 = _c[1];
+                return ctx.quadraticCurveTo(_x2 - _this.originX, _y2 - _this.originY, _x3 - _this.originX, _y3 - _this.originY);
+            });
         }
         if (this.styleManager.hasFill) {
             ctx.fill();
@@ -1346,11 +1782,12 @@ class QuadraticCurveShape extends BaseStyle_1.BaseStyle {
         if (this.styleManager.hasStroke) {
             ctx.stroke();
         }
-    }
-    customDraw() {
+    };
+    QuadraticCurveShape.prototype.customDraw = function () {
         this.traceShape(this.ctx);
-    }
-}
+    };
+    return QuadraticCurveShape;
+}(BaseStyle_1.BaseStyle));
 exports.QuadraticCurveShape = QuadraticCurveShape;
 //# sourceMappingURL=QuadraticCurveShape.js.map
 
@@ -1360,29 +1797,46 @@ exports.QuadraticCurveShape = QuadraticCurveShape;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const BaseStyle_1 = __webpack_require__(1);
-const interfaces_1 = __webpack_require__(2);
+var BaseStyle_1 = __webpack_require__(1);
+var interfaces_1 = __webpack_require__(2);
 /**
  * Draws a filled and/or stroked rectangle.
  */
-class RectShape extends BaseStyle_1.BaseStyle {
-    constructor(canvas, ctx, name = "Rect_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) {
-        super(canvas, ctx, name);
+var RectShape = (function (_super) {
+    __extends(RectShape, _super);
+    function RectShape(canvas, ctx, name) {
+        if (name === void 0) { name = "Rect_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER); }
+        return _super.call(this, canvas, ctx, name) || this;
     }
-    get type() { return interfaces_1.ShapeType.SHAPE; }
-    traceShape(ctx) {
+    Object.defineProperty(RectShape.prototype, "type", {
+        get: function () { return interfaces_1.ShapeType.SHAPE; },
+        enumerable: true,
+        configurable: true
+    });
+    RectShape.prototype.traceShape = function (ctx) {
         if (this.styleManager.hasFill) {
             ctx.fillRect(0 - this.originX, 0 - this.originY, this.width, this.height);
         }
         if (this.styleManager.hasStroke) {
             ctx.strokeRect(0 - this.originX, 0 - this.originY, this.width, this.height);
         }
-    }
-    customDraw() {
+    };
+    RectShape.prototype.customDraw = function () {
         this.traceShape(this.ctx);
-    }
-}
+    };
+    return RectShape;
+}(BaseStyle_1.BaseStyle));
 exports.RectShape = RectShape;
 //# sourceMappingURL=RectShape.js.map
 
@@ -1392,48 +1846,70 @@ exports.RectShape = RectShape;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const BaseStyle_1 = __webpack_require__(1);
-const interfaces_1 = __webpack_require__(2);
+var BaseStyle_1 = __webpack_require__(1);
+var interfaces_1 = __webpack_require__(2);
 /**
  * Draws a filled and/or stroked line of text.
  */
-class TextShape extends BaseStyle_1.BaseStyle {
-    constructor(canvas, ctx, name = "Text_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) {
-        super(canvas, ctx, name);
-        this._text = "";
+var TextShape = (function (_super) {
+    __extends(TextShape, _super);
+    function TextShape(canvas, ctx, name) {
+        if (name === void 0) { name = "Text_" + Math.floor(Math.random() * Number.MAX_SAFE_INTEGER); }
+        var _this = _super.call(this, canvas, ctx, name) || this;
+        _this._text = "";
+        return _this;
     }
-    get type() { return interfaces_1.ShapeType.TEXT; }
-    withText(text, maxWidth) {
+    Object.defineProperty(TextShape.prototype, "type", {
+        get: function () { return interfaces_1.ShapeType.TEXT; },
+        enumerable: true,
+        configurable: true
+    });
+    TextShape.prototype.withText = function (text, maxWidth) {
         this._maxWidth = maxWidth;
         this.text = text;
         return this;
-    }
-    set text(text) {
-        this._text = text;
-        this.styleManager.begin();
-        this.width = this._maxWidth || this.ctx.measureText(this._text).width;
-        this.styleManager.end();
-    }
-    get text() {
-        return this._text;
-    }
-    textStyle(font, align, baseline) {
+    };
+    Object.defineProperty(TextShape.prototype, "text", {
+        get: function () {
+            return this._text;
+        },
+        set: function (text) {
+            this._text = text;
+            this.styleManager.begin();
+            this.width = this._maxWidth || this.ctx.measureText(this._text).width;
+            this.styleManager.end();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TextShape.prototype.textStyle = function (font, align, baseline) {
         this.styleManager.textStyle(font, align, baseline);
         return this;
-    }
-    traceShape(ctx) {
+    };
+    TextShape.prototype.traceShape = function (ctx) {
         ctx.fillRect(0 - this.originX, 0 - this.originY, this.width, this.height);
-    }
-    customDraw() {
+    };
+    TextShape.prototype.customDraw = function () {
         if (this.styleManager.hasFill) {
             this.ctx.fillText(this.text, 0 - this.originX, 0 - this.originY, this._maxWidth);
         }
         if (this.styleManager.hasStroke) {
             this.ctx.strokeText(this.text, 0 - this.originX, 0 - this.originY, this._maxWidth);
         }
-    }
-}
+    };
+    return TextShape;
+}(BaseStyle_1.BaseStyle));
 exports.TextShape = TextShape;
 //# sourceMappingURL=TextShape.js.map
 
@@ -1470,8 +1946,8 @@ exports.TextShape = TextShape;
 */
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const PI_M2 = 6.2832; // Math.PI * 2;
-const PI_D2 = 1.5708; // Math.PI / 2;
+var PI_M2 = 6.2832; // Math.PI * 2;
+var PI_D2 = 1.5708; // Math.PI / 2;
 /*
 Linear
 ---------------------------------------------------------------------------------
@@ -1583,7 +2059,7 @@ Elastic
 ---------------------------------------------------------------------------------
 */
 function easeInElastic(t, b, c, d, a, p) {
-    let s;
+    var s;
     if (t === 0) {
         return b;
     }
@@ -1605,7 +2081,7 @@ function easeInElastic(t, b, c, d, a, p) {
 }
 exports.easeInElastic = easeInElastic;
 function easeOutElastic(t, b, c, d, a, p) {
-    let s;
+    var s;
     if (t === 0) {
         return b;
     }
@@ -1627,7 +2103,7 @@ function easeOutElastic(t, b, c, d, a, p) {
 }
 exports.easeOutElastic = easeOutElastic;
 function easeInOutElastic(t, b, c, d, a, p) {
-    let s;
+    var s;
     if (t === 0) {
         return b;
     }
@@ -1673,15 +2149,18 @@ exports.easeInOutCircular = easeInOutCircular;
 Back
 ---------------------------------------------------------------------------------
 */
-function easeInBack(t, b, c, d, s = 1.70158) {
+function easeInBack(t, b, c, d, s) {
+    if (s === void 0) { s = 1.70158; }
     return c * (t /= d) * t * ((s + 1) * t - s) + b;
 }
 exports.easeInBack = easeInBack;
-function easeOutBack(t, b, c, d, s = 1.70158) {
+function easeOutBack(t, b, c, d, s) {
+    if (s === void 0) { s = 1.70158; }
     return c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b;
 }
 exports.easeOutBack = easeOutBack;
-function easeInOutBack(t, b, c, d, s = 1.70158) {
+function easeInOutBack(t, b, c, d, s) {
+    if (s === void 0) { s = 1.70158; }
     if ((t /= d / 2) < 1) {
         return c / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + b;
     }
@@ -1748,43 +2227,60 @@ exports.easeInOutCubic = easeInOutCubic;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-class Boundary {
-    constructor() {
+var Boundary = (function () {
+    function Boundary() {
         this._boundary = [[0, 0], [0, 0]];
     }
-    setPoint(point) {
-        const [[x1, y1], [x2, y2]] = this._boundary;
+    Boundary.prototype.setPoint = function (point) {
+        var _a = this._boundary, _b = _a[0], x1 = _b[0], y1 = _b[1], _c = _a[1], x2 = _c[0], y2 = _c[1];
         this._boundary = [
             [Math.min(point[0], x1), Math.min(point[1], y1)],
             [Math.max(point[0], x2), Math.max(point[1], y2)],
         ];
-    }
-    get border() {
-        const [[x1, y1], [x2, y2]] = this._boundary;
-        return [[x1, y1], [x2, y2]];
-    }
-    get width() {
-        const [[x1,], [x2,]] = this._boundary;
-        return x2 - x1;
-    }
-    get height() {
-        const [[, y1], [, y2]] = this._boundary;
-        return y2 - y1;
-    }
-    get center() {
-        const [[x1, y1], [x2, y2]] = this._boundary;
-        return [(x2 + x1) / 2, (y2 + y1) / 2];
-    }
-    reset() {
+    };
+    Object.defineProperty(Boundary.prototype, "border", {
+        get: function () {
+            var _a = this._boundary, _b = _a[0], x1 = _b[0], y1 = _b[1], _c = _a[1], x2 = _c[0], y2 = _c[1];
+            return [[x1, y1], [x2, y2]];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Boundary.prototype, "width", {
+        get: function () {
+            var _a = this._boundary, x1 = _a[0][0], x2 = _a[1][0];
+            return x2 - x1;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Boundary.prototype, "height", {
+        get: function () {
+            var _a = this._boundary, _b = _a[0], y1 = _b[1], _c = _a[1], y2 = _c[1];
+            return y2 - y1;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Boundary.prototype, "center", {
+        get: function () {
+            var _a = this._boundary, _b = _a[0], x1 = _b[0], y1 = _b[1], _c = _a[1], x2 = _c[0], y2 = _c[1];
+            return [(x2 + x1) / 2, (y2 + y1) / 2];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Boundary.prototype.reset = function () {
         this._boundary = [[0, 0], [0, 0]];
-    }
-    clone() {
-        const b = new Boundary();
-        const [[x1, y1], [x2, y2]] = this._boundary;
+    };
+    Boundary.prototype.clone = function () {
+        var b = new Boundary();
+        var _a = this._boundary, _b = _a[0], x1 = _b[0], y1 = _b[1], _c = _a[1], x2 = _c[0], y2 = _c[1];
         b._boundary = [[x1, y1], [x2, y2]];
         return b;
-    }
-}
+    };
+    return Boundary;
+}());
 exports.Boundary = Boundary;
 //# sourceMappingURL=Boundary.js.map
 
@@ -1796,29 +2292,29 @@ exports.Boundary = Boundary;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 function parseColorStyle(color) {
-    let rgbaColor;
+    var rgbaColor;
     if (typeof color === "string") {
         color = color.trim();
         if (color.indexOf("rgba(") === 0) {
-            rgbaColor = color.slice(5, -1).split(",").map(c => parseInt(c.trim(), 10));
+            rgbaColor = color.slice(5, -1).split(",").map(function (c) { return parseInt(c.trim(), 10); });
         }
         else if (color.indexOf("rgb(") === 0) {
-            rgbaColor = color.slice(4, -1).split(",").map(c => parseInt(c.trim(), 10));
+            rgbaColor = color.slice(4, -1).split(",").map(function (c) { return parseInt(c.trim(), 10); });
             rgbaColor.push(1);
         }
         else if (color.indexOf("#") === 0 && color.length === 7) {
-            rgbaColor = [color.slice(1, 3), color.slice(3, 5), color.slice(5), "1"].map(c => +`0x${c}`);
+            rgbaColor = [color.slice(1, 3), color.slice(3, 5), color.slice(5), "1"].map(function (c) { return +("0x" + c); });
         }
         else if (color.indexOf("#") === 0 && color.length === 9) {
-            rgbaColor = [color.slice(1, 3), color.slice(3, 5), color.slice(5), color.slice(6)].map(c => parseInt(c, 16));
+            rgbaColor = [color.slice(1, 3), color.slice(3, 5), color.slice(5), color.slice(6)].map(function (c) { return parseInt(c, 16); });
             rgbaColor[3] /= 255;
         }
         else if (color.indexOf("#") === 0) {
-            rgbaColor = [color.slice(1, 2), color.slice(2, 3), color.slice(3)].map(c => +`0x${c}${c}`);
+            rgbaColor = [color.slice(1, 2), color.slice(2, 3), color.slice(3)].map(function (c) { return +("0x" + c + c); });
             rgbaColor.push(1);
         }
         else {
-            throw new ReferenceError(`The ngvas library does not understand the style "${color}".`);
+            throw new ReferenceError("The ngvas library does not understand the style \"" + color + "\".");
         }
     }
     else if (typeof color === "number") {
@@ -1827,13 +2323,13 @@ function parseColorStyle(color) {
         rgbaColor[1] = (rgbaColor[1] - (rgbaColor[0] << 16) - rgbaColor[2]) >> 8;
     }
     else {
-        throw new ReferenceError(`The ngvas library does not understand the style "${color}".`);
+        throw new ReferenceError("The ngvas library does not understand the style \"" + color + "\".");
     }
     return rgbaColor;
 }
 exports.parseColorStyle = parseColorStyle;
 function toRgbaString(color) {
-    return `rgba(${color.join()})`;
+    return "rgba(" + color.join() + ")";
 }
 exports.toRgbaString = toRgbaString;
 //# sourceMappingURL=color-style-parser.js.map
@@ -1845,20 +2341,23 @@ exports.toRgbaString = toRgbaString;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(0);
-const common_1 = __webpack_require__(35);
-const ngvas_component_1 = __webpack_require__(33);
-const ngvas_arc_component_1 = __webpack_require__(24);
-const ngvas_bezier_component_1 = __webpack_require__(25);
-const ngvas_circle_component_1 = __webpack_require__(26);
-const ngvas_image_component_1 = __webpack_require__(27);
-const ngvas_line_component_1 = __webpack_require__(28);
-const ngvas_polygon_component_1 = __webpack_require__(29);
-const ngvas_quadratic_component_1 = __webpack_require__(30);
-const ngvas_rectange_component_1 = __webpack_require__(31);
-const ngvas_text_component_1 = __webpack_require__(32);
-class NgvasModule {
-}
+var core_1 = __webpack_require__(0);
+var common_1 = __webpack_require__(35);
+var ngvas_component_1 = __webpack_require__(33);
+var ngvas_arc_component_1 = __webpack_require__(24);
+var ngvas_bezier_component_1 = __webpack_require__(25);
+var ngvas_circle_component_1 = __webpack_require__(26);
+var ngvas_image_component_1 = __webpack_require__(27);
+var ngvas_line_component_1 = __webpack_require__(28);
+var ngvas_polygon_component_1 = __webpack_require__(29);
+var ngvas_quadratic_component_1 = __webpack_require__(30);
+var ngvas_rectange_component_1 = __webpack_require__(31);
+var ngvas_text_component_1 = __webpack_require__(32);
+var NgvasModule = (function () {
+    function NgvasModule() {
+    }
+    return NgvasModule;
+}());
 NgvasModule.decorators = [
     { type: core_1.NgModule, args: [{
                 imports: [
@@ -1891,7 +2390,7 @@ NgvasModule.decorators = [
             },] },
 ];
 /** @nocollapse */
-NgvasModule.ctorParameters = () => [];
+NgvasModule.ctorParameters = function () { return []; };
 exports.NgvasModule = NgvasModule;
 //# sourceMappingURL=ngvas.module.js.map
 
@@ -1901,52 +2400,76 @@ exports.NgvasModule = NgvasModule;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const interfaces_1 = __webpack_require__(2);
-const BaseStyle_1 = __webpack_require__(1);
-class Group extends BaseStyle_1.BaseStyle {
-    constructor(canvas, ctx, name) {
-        super(canvas, ctx, name);
+var interfaces_1 = __webpack_require__(2);
+var BaseStyle_1 = __webpack_require__(1);
+var Group = (function (_super) {
+    __extends(Group, _super);
+    function Group(canvas, ctx, name) {
+        var _this = _super.call(this, canvas, ctx, name) || this;
         // Render children from high to 0 index.
-        this._children = [];
-        this.__isVisible = true;
-        this.__isActive = true;
+        _this._children = [];
+        _this.__isVisible = true;
+        _this.__isActive = true;
+        return _this;
     }
-    get type() {
-        return interfaces_1.ShapeType.GROUP;
-    }
-    get isActive() { return this.__isActive; }
-    set isActive(v) { this.__isActive = v; }
-    get isVisible() { return this.__isVisible; }
-    set isVisible(v) { this.__isVisible = v; }
-    withText() {
+    Object.defineProperty(Group.prototype, "type", {
+        get: function () {
+            return interfaces_1.ShapeType.GROUP;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Group.prototype, "isActive", {
+        get: function () { return this.__isActive; },
+        set: function (v) { this.__isActive = v; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Group.prototype, "isVisible", {
+        get: function () { return this.__isVisible; },
+        set: function (v) { this.__isVisible = v; },
+        enumerable: true,
+        configurable: true
+    });
+    Group.prototype.withText = function () {
         throw new Error("This method is not supported in StyleManager.");
-    }
-    numChildren() {
+    };
+    Group.prototype.numChildren = function () {
         return this._children.length;
-    }
-    addChild(shape) {
+    };
+    Group.prototype.addChild = function (shape) {
         this._children.push(shape);
         return this;
-    }
-    removeChild(shape) {
-        this._children = this._children.filter(s => s === shape);
+    };
+    Group.prototype.removeChild = function (shape) {
+        this._children = this._children.filter(function (s) { return s === shape; });
         return this;
-    }
-    removeChildAt(index) {
-        const child = this._children[index];
-        this._children = this._children.filter(s => s !== child);
+    };
+    Group.prototype.removeChildAt = function (index) {
+        var child = this._children[index];
+        this._children = this._children.filter(function (s) { return s !== child; });
         return child;
-    }
-    removeAllChildren() {
+    };
+    Group.prototype.removeAllChildren = function () {
         this._children = [];
-    }
-    traceShape(ctx) {
-        this._children.filter(c => c.traceShape !== undefined).forEach(c => c.traceShape(ctx));
-    }
-    customDraw(ctxt) {
+    };
+    Group.prototype.traceShape = function (ctx) {
+        this._children.filter(function (c) { return c.traceShape !== undefined; }).forEach(function (c) { return c.traceShape(ctx); });
+    };
+    Group.prototype.customDraw = function (ctxt) {
         if (this.isActive || this.isVisible) {
-            this._children.forEach(c => {
+            this._children.forEach(function (c) {
                 // c.originX += this.originX + c.x;
                 // c.originY += this.originY + c.y;
                 c.draw(ctxt);
@@ -1954,21 +2477,23 @@ class Group extends BaseStyle_1.BaseStyle {
                 // c.originY -= this.originY + c.y;
             });
         }
-    }
-    isHit(x, y) {
+    };
+    Group.prototype.isHit = function (x, y) {
         if (!this.isVisible) {
             return false;
         }
         // Runs hitArea on every child.
-        let isHit = false;
-        for (const c of this._children) {
+        var isHit = false;
+        for (var _i = 0, _a = this._children; _i < _a.length; _i++) {
+            var c = _a[_i];
             if (c.isVisible && c.isHit(x, y)) {
                 isHit = true;
             }
         }
         return isHit;
-    }
-}
+    };
+    return Group;
+}(BaseStyle_1.BaseStyle));
 exports.Group = Group;
 //# sourceMappingURL=Group.js.map
 
@@ -1979,36 +2504,52 @@ exports.Group = Group;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-class StyleManager {
-    constructor(ctx) {
+var StyleManager = (function () {
+    function StyleManager(ctx) {
         this.ctx = ctx;
         this.ctxValues = {};
     }
-    get hasFill() {
-        return !!this.ctxValues.fillStyle;
-    }
-    get hasStroke() {
-        return !!this.ctxValues.lineWidth;
-    }
-    get lineWidth() {
-        return this.ctxValues.lineWidth;
-    }
-    set opacity(alpha) {
-        this.ctxValues.globalAlpha = alpha;
-    }
-    get opacity() {
-        return this.ctxValues.globalAlpha;
-    }
-    compose(alpha, overlay) {
+    Object.defineProperty(StyleManager.prototype, "hasFill", {
+        get: function () {
+            return !!this.ctxValues.fillStyle;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleManager.prototype, "hasStroke", {
+        get: function () {
+            return !!this.ctxValues.lineWidth;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleManager.prototype, "lineWidth", {
+        get: function () {
+            return this.ctxValues.lineWidth;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleManager.prototype, "opacity", {
+        get: function () {
+            return this.ctxValues.globalAlpha;
+        },
+        set: function (alpha) {
+            this.ctxValues.globalAlpha = alpha;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    StyleManager.prototype.compose = function (alpha, overlay) {
         this.ctxValues.globalAlpha = undefinedOr(alpha, this.ctxValues.globalAlpha);
         this.ctxValues.globalCompositeOperation = undefinedOr(overlay, this.ctxValues.globalCompositeOperation);
         return this;
-    }
-    withFill(style) {
+    };
+    StyleManager.prototype.withFill = function (style) {
         this.ctxValues.fillStyle = undefinedOr(style, this.ctxValues.fillStyle);
         return this;
-    }
-    withStroke(width, style, join, cap, dashOffset, miterLimit) {
+    };
+    StyleManager.prototype.withStroke = function (width, style, join, cap, dashOffset, miterLimit) {
         this.ctxValues.lineCap = undefinedOr(cap, this.ctxValues.lineCap);
         this.ctxValues.lineDashOffset = undefinedOr(dashOffset, this.ctxValues.lineDashOffset);
         this.ctxValues.lineJoin = undefinedOr(join, this.ctxValues.lineJoin);
@@ -2016,38 +2557,39 @@ class StyleManager {
         this.ctxValues.strokeStyle = undefinedOr(style, this.ctxValues.strokeStyle);
         this.ctxValues.miterLimit = undefinedOr(miterLimit, this.ctxValues.miterLimit);
         return this;
-    }
-    withShadow(blur, color, offsetX, offsetY) {
+    };
+    StyleManager.prototype.withShadow = function (blur, color, offsetX, offsetY) {
         this.ctxValues.shadowBlur = undefinedOr(blur, this.ctxValues.shadowBlur);
         this.ctxValues.shadowColor = undefinedOr(color, this.ctxValues.shadowColor);
         this.ctxValues.shadowOffsetX = undefinedOr(offsetX, this.ctxValues.shadowOffsetX);
         this.ctxValues.shadowOffsetY = undefinedOr(offsetY, this.ctxValues.shadowOffsetY);
         return this;
-    }
-    withText() {
+    };
+    StyleManager.prototype.withText = function () {
         throw new Error("This method is not supported in StyleManager.");
-    }
-    textStyle(font, align, baseline) {
+    };
+    StyleManager.prototype.textStyle = function (font, align, baseline) {
         this.ctxValues.font = undefinedOr(font, this.ctxValues.font);
         this.ctxValues.textAlign = undefinedOr(align, this.ctxValues.textAlign);
         this.ctxValues.textBaseline = undefinedOr(baseline, this.ctxValues.textBaseline);
         return this;
-    }
-    begin() {
+    };
+    StyleManager.prototype.begin = function () {
         this.ctx.save();
-        for (const p in this.ctxValues) {
+        for (var p in this.ctxValues) {
             if (this.ctxValues.hasOwnProperty(p)) {
                 this.ctx[p] = this.ctxValues[p];
             }
         }
-    }
-    end() {
+    };
+    StyleManager.prototype.end = function () {
         this.ctx.restore();
-    }
-    clear() {
+    };
+    StyleManager.prototype.clear = function () {
         this.ctxValues = {};
-    }
-}
+    };
+    return StyleManager;
+}());
 exports.StyleManager = StyleManager;
 function undefinedOr(arg, ctxProp) {
     return arg !== undefined ? arg : ctxProp;
@@ -2061,12 +2603,12 @@ function undefinedOr(arg, ctxProp) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const color_style_parser_1 = __webpack_require__(18);
+var color_style_parser_1 = __webpack_require__(18);
 /**
  * Class for StyleTweenHelper.
  */
-class StyleTweenHelper {
-    constructor() {
+var StyleTweenHelper = (function () {
+    function StyleTweenHelper() {
         this._isFillDirty = false;
         this._fillColorRGBA = [0, 0, 0, 1];
         this._isStrokeDirty = false;
@@ -2077,7 +2619,7 @@ class StyleTweenHelper {
         this._shadowOffset = [0, 0];
         this._shadowColorRGBA = [0, 0, 0, 1];
     }
-    draw(styleManager) {
+    StyleTweenHelper.prototype.draw = function (styleManager) {
         if (this._isFillDirty) {
             styleManager.withFill(color_style_parser_1.toRgbaString(this._fillColorRGBA));
         }
@@ -2090,146 +2632,223 @@ class StyleTweenHelper {
         this._isFillDirty = false;
         this._isStrokeDirty = false;
         this._isShadowDirty = false;
-    }
-    // "fillColorR", "fillColorG", "fillColorB", "fillColorA"
-    set fillColorRGBA(rgba) {
-        this._fillColorRGBA = color_style_parser_1.parseColorStyle(rgba);
-        this._isFillDirty = true;
-    }
-    get fillColorRGBA() {
-        return color_style_parser_1.toRgbaString(this._fillColorRGBA);
-    }
-    set fillColorR(r) {
-        this._fillColorRGBA[0] = r | 0;
-        this._isFillDirty = true;
-    }
-    get fillColorR() {
-        return this._fillColorRGBA[0];
-    }
-    set fillColorG(g) {
-        this._fillColorRGBA[1] = g | 0;
-        this._isFillDirty = true;
-    }
-    get fillColorG() {
-        return this._fillColorRGBA[1];
-    }
-    set fillColorB(b) {
-        this._fillColorRGBA[2] = b | 0;
-        this._isFillDirty = true;
-    }
-    get fillColorB() {
-        return this._fillColorRGBA[2];
-    }
-    set fillColorA(a) {
-        this._fillColorRGBA[3] = a;
-        this._isFillDirty = true;
-        // this.styleManager.withFill(toRgbaString(this._fillColorRGBA));
-    }
-    get fillColorA() {
-        return this._fillColorRGBA[3];
-    }
-    // "strokeWidth", "strokeColorR", "strokeColorG", "strokeColorB", "strokeColorA"
-    set strokeWidth(w) {
-        this._strokeWidth = w;
-        this._isStrokeDirty = true;
-    }
-    get strokeWidth() {
-        return this._strokeWidth;
-    }
-    set strokeColorRGBA(rgba) {
-        this._strokeColorRGBA = color_style_parser_1.parseColorStyle(rgba);
-        this._isStrokeDirty = true;
-    }
-    get strokeColorRGBA() {
-        return color_style_parser_1.toRgbaString(this._strokeColorRGBA);
-    }
-    set strokeColorR(r) {
-        this._strokeColorRGBA[0] = r | 0;
-        this._isStrokeDirty = true;
-    }
-    get strokeColorR() {
-        return this._strokeColorRGBA[0];
-    }
-    set strokeColorG(g) {
-        this._strokeColorRGBA[1] = g | 0;
-        this._isStrokeDirty = true;
-    }
-    get strokeColorG() {
-        return this._strokeColorRGBA[1];
-    }
-    set strokeColorB(b) {
-        this._strokeColorRGBA[2] = b | 0;
-        this._isStrokeDirty = true;
-    }
-    get strokeColorB() {
-        return this._strokeColorRGBA[2];
-    }
-    set strokeColorA(a) {
-        this._strokeColorRGBA[3] = a;
-        this._isStrokeDirty = true;
-        // this.styleManager.withStroke(this._strokeWidth, toRgbaString(this._strokeColorRGBA));
-    }
-    get strokeColorA() {
-        return this._strokeColorRGBA[3];
-    }
-    // "shadowBlur", "shadowColorR", "shadowColorG", "shadowColorB", "shadowColorA", "shadowOffsetX", "shadowOffsetY"
-    set shadowBlur(b) {
-        this._shadowBlur = Math.max(0, b);
-        this._isShadowDirty = true;
-    }
-    get shadowBlur() {
-        return this._shadowBlur;
-    }
-    set shadowOffsetX(x) {
-        this._shadowOffset[0] = x;
-        this._isShadowDirty = true;
-    }
-    get shadowOffsetX() {
-        return this._shadowOffset[0];
-    }
-    set shadowOffsetY(y) {
-        this._shadowOffset[1] = y;
-        this._isShadowDirty = true;
-    }
-    get shadowOffsetY() {
-        return this._shadowOffset[1];
-    }
-    set shadowColorRGBA(rgba) {
-        this._shadowColorRGBA = color_style_parser_1.parseColorStyle(rgba);
-        this._isShadowDirty = true;
-    }
-    get shadowColorRGBA() {
-        return color_style_parser_1.toRgbaString(this._shadowColorRGBA);
-    }
-    set shadowColorR(r) {
-        this._shadowColorRGBA[0] = r | 0;
-        this._isShadowDirty = true;
-    }
-    get shadowColorR() {
-        return this._shadowColorRGBA[0];
-    }
-    set shadowColorG(g) {
-        this._shadowColorRGBA[1] = g | 0;
-        this._isShadowDirty = true;
-    }
-    get shadowColorG() {
-        return this._shadowColorRGBA[1];
-    }
-    set shadowColorB(b) {
-        this._shadowColorRGBA[2] = b | 0;
-        this._isShadowDirty = true;
-    }
-    get shadowColorB() {
-        return this._shadowColorRGBA[2];
-    }
-    set shadowColorA(a) {
-        this._shadowColorRGBA[3] = a;
-        this._isShadowDirty = true;
-    }
-    get shadowColorA() {
-        return this._shadowColorRGBA[3];
-    }
-}
+    };
+    Object.defineProperty(StyleTweenHelper.prototype, "fillColorRGBA", {
+        get: function () {
+            return color_style_parser_1.toRgbaString(this._fillColorRGBA);
+        },
+        // "fillColorR", "fillColorG", "fillColorB", "fillColorA"
+        set: function (rgba) {
+            this._fillColorRGBA = color_style_parser_1.parseColorStyle(rgba);
+            this._isFillDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "fillColorR", {
+        get: function () {
+            return this._fillColorRGBA[0];
+        },
+        set: function (r) {
+            this._fillColorRGBA[0] = r | 0;
+            this._isFillDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "fillColorG", {
+        get: function () {
+            return this._fillColorRGBA[1];
+        },
+        set: function (g) {
+            this._fillColorRGBA[1] = g | 0;
+            this._isFillDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "fillColorB", {
+        get: function () {
+            return this._fillColorRGBA[2];
+        },
+        set: function (b) {
+            this._fillColorRGBA[2] = b | 0;
+            this._isFillDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "fillColorA", {
+        get: function () {
+            return this._fillColorRGBA[3];
+        },
+        set: function (a) {
+            this._fillColorRGBA[3] = a;
+            this._isFillDirty = true;
+            // this.styleManager.withFill(toRgbaString(this._fillColorRGBA));
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "strokeWidth", {
+        get: function () {
+            return this._strokeWidth;
+        },
+        // "strokeWidth", "strokeColorR", "strokeColorG", "strokeColorB", "strokeColorA"
+        set: function (w) {
+            this._strokeWidth = w;
+            this._isStrokeDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "strokeColorRGBA", {
+        get: function () {
+            return color_style_parser_1.toRgbaString(this._strokeColorRGBA);
+        },
+        set: function (rgba) {
+            this._strokeColorRGBA = color_style_parser_1.parseColorStyle(rgba);
+            this._isStrokeDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "strokeColorR", {
+        get: function () {
+            return this._strokeColorRGBA[0];
+        },
+        set: function (r) {
+            this._strokeColorRGBA[0] = r | 0;
+            this._isStrokeDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "strokeColorG", {
+        get: function () {
+            return this._strokeColorRGBA[1];
+        },
+        set: function (g) {
+            this._strokeColorRGBA[1] = g | 0;
+            this._isStrokeDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "strokeColorB", {
+        get: function () {
+            return this._strokeColorRGBA[2];
+        },
+        set: function (b) {
+            this._strokeColorRGBA[2] = b | 0;
+            this._isStrokeDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "strokeColorA", {
+        get: function () {
+            return this._strokeColorRGBA[3];
+        },
+        set: function (a) {
+            this._strokeColorRGBA[3] = a;
+            this._isStrokeDirty = true;
+            // this.styleManager.withStroke(this._strokeWidth, toRgbaString(this._strokeColorRGBA));
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "shadowBlur", {
+        get: function () {
+            return this._shadowBlur;
+        },
+        // "shadowBlur", "shadowColorR", "shadowColorG", "shadowColorB", "shadowColorA", "shadowOffsetX", "shadowOffsetY"
+        set: function (b) {
+            this._shadowBlur = Math.max(0, b);
+            this._isShadowDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "shadowOffsetX", {
+        get: function () {
+            return this._shadowOffset[0];
+        },
+        set: function (x) {
+            this._shadowOffset[0] = x;
+            this._isShadowDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "shadowOffsetY", {
+        get: function () {
+            return this._shadowOffset[1];
+        },
+        set: function (y) {
+            this._shadowOffset[1] = y;
+            this._isShadowDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "shadowColorRGBA", {
+        get: function () {
+            return color_style_parser_1.toRgbaString(this._shadowColorRGBA);
+        },
+        set: function (rgba) {
+            this._shadowColorRGBA = color_style_parser_1.parseColorStyle(rgba);
+            this._isShadowDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "shadowColorR", {
+        get: function () {
+            return this._shadowColorRGBA[0];
+        },
+        set: function (r) {
+            this._shadowColorRGBA[0] = r | 0;
+            this._isShadowDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "shadowColorG", {
+        get: function () {
+            return this._shadowColorRGBA[1];
+        },
+        set: function (g) {
+            this._shadowColorRGBA[1] = g | 0;
+            this._isShadowDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "shadowColorB", {
+        get: function () {
+            return this._shadowColorRGBA[2];
+        },
+        set: function (b) {
+            this._shadowColorRGBA[2] = b | 0;
+            this._isShadowDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StyleTweenHelper.prototype, "shadowColorA", {
+        get: function () {
+            return this._shadowColorRGBA[3];
+        },
+        set: function (a) {
+            this._shadowColorRGBA[3] = a;
+            this._isShadowDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return StyleTweenHelper;
+}());
 exports.StyleTweenHelper = StyleTweenHelper;
 //# sourceMappingURL=StyleTweenHelper.js.map
 
@@ -2240,9 +2859,9 @@ exports.StyleTweenHelper = StyleTweenHelper;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const easing_1 = __webpack_require__(16);
-class TweenManager {
-    constructor() {
+var easing_1 = __webpack_require__(16);
+var TweenManager = (function () {
+    function TweenManager() {
         this._collection = [];
     }
     // private _preExecutor: Function[] = [];
@@ -2250,28 +2869,29 @@ class TweenManager {
     /**
      * Execute tweens.
      */
-    tween() {
+    TweenManager.prototype.tween = function () {
         // this._preExecutor.forEach(e => e());
-        this._collection = this._collection.filter(f => f());
+        this._collection = this._collection.filter(function (f) { return f(); });
         // this._postExecutor.forEach(e => e());
-    }
-    clear() {
+    };
+    TweenManager.prototype.clear = function () {
         this._collection = [];
         // this._preExecutor = [];
         // this._postExecutor = [];
-    }
+    };
     // public addPreExecutor (f: Function) {
     //     this._preExecutor.push(f);
     // }
     // public addPostExecutor (f: Function) {
     //     this._postExecutor.push(f);
     // }
-    addTween(target, tween, duration, toValues, paramKeys, callback, priority = 10, preFunc, postFunc) {
-        const start = Date.now();
-        const end = Date.now() + duration;
-        const startValues = paramKeys.map(k => target[k]);
-        const func = function () {
-            const now = Date.now();
+    TweenManager.prototype.addTween = function (target, tween, duration, toValues, paramKeys, callback, priority, preFunc, postFunc) {
+        if (priority === void 0) { priority = 10; }
+        var start = Date.now();
+        var end = Date.now() + duration;
+        var startValues = paramKeys.map(function (k) { return target[k]; });
+        var func = function () {
+            var now = Date.now();
             if (preFunc !== undefined) {
                 preFunc();
             }
@@ -2285,7 +2905,7 @@ class TweenManager {
                 }
                 return false;
             }
-            const results = startValues.map((v, i) => (tween || easing_1.easeLinear)(now - start, v, toValues[i] - v, duration));
+            var results = startValues.map(function (v, i) { return (tween || easing_1.easeLinear)(now - start, v, toValues[i] - v, duration); });
             paramKeys.forEach(function (p, i) { target[p] = results[i]; });
             if (postFunc !== undefined) {
                 postFunc(results);
@@ -2294,9 +2914,10 @@ class TweenManager {
         };
         func["$priority"] = priority;
         this._collection.push(func);
-        this._collection.sort((a, b) => a.$priority - b.$priority);
-    }
-}
+        this._collection.sort(function (a, b) { return a.$priority - b.$priority; });
+    };
+    return TweenManager;
+}());
 exports.TweenManager = TweenManager;
 //# sourceMappingURL=TweenManager.js.map
 
@@ -2306,34 +2927,58 @@ exports.TweenManager = TweenManager;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(0);
-const ArcShape_1 = __webpack_require__(6);
-const base_component_1 = __webpack_require__(3);
-class NgvasArcComponent extends base_component_1.NgvasBaseComponent {
-    constructor() {
-        super(ArcShape_1.ArcShape);
+var core_1 = __webpack_require__(0);
+var ArcShape_1 = __webpack_require__(6);
+var base_component_1 = __webpack_require__(3);
+var NgvasArcComponent = (function (_super) {
+    __extends(NgvasArcComponent, _super);
+    function NgvasArcComponent() {
+        return _super.call(this, ArcShape_1.ArcShape) || this;
     }
-    set connectToCenter(c) {
-        this.execOrDelay((s) => s.connectToCenter(c));
-    }
-    set radius(v) {
-        if (Array.isArray(v)) {
-            this.execOrDelay((s) => s.withRadius(v[0], v[1], v[2], v[3]));
-        }
-        else {
-            this.execOrDelay((s) => s.withRadius(v));
-        }
-    }
-    set angle(v) {
-        if (Array.isArray(v)) {
-            this.execOrDelay((s) => s.withAngle(v[0], v[1], v[2], v[3]));
-        }
-        else {
-            this.execOrDelay((s) => s.withAngle(v));
-        }
-    }
-}
+    Object.defineProperty(NgvasArcComponent.prototype, "connectToCenter", {
+        set: function (c) {
+            this.execOrDelay(function (s) { return s.connectToCenter(c); });
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasArcComponent.prototype, "radius", {
+        set: function (v) {
+            if (Array.isArray(v)) {
+                this.execOrDelay(function (s) { return s.withRadius(v[0], v[1], v[2], v[3]); });
+            }
+            else {
+                this.execOrDelay(function (s) { return s.withRadius(v); });
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasArcComponent.prototype, "angle", {
+        set: function (v) {
+            if (Array.isArray(v)) {
+                this.execOrDelay(function (s) { return s.withAngle(v[0], v[1], v[2], v[3]); });
+            }
+            else {
+                this.execOrDelay(function (s) { return s.withAngle(v); });
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return NgvasArcComponent;
+}(base_component_1.NgvasBaseComponent));
 NgvasArcComponent.decorators = [
     { type: core_1.Component, args: [{
                 // moduleId: String(module.id),
@@ -2343,7 +2988,7 @@ NgvasArcComponent.decorators = [
             },] },
 ];
 /** @nocollapse */
-NgvasArcComponent.ctorParameters = () => [];
+NgvasArcComponent.ctorParameters = function () { return []; };
 NgvasArcComponent.propDecorators = {
     'connectToCenter': [{ type: core_1.Input, args: ["connectToCenter",] },],
     'radius': [{ type: core_1.Input, args: ["radius",] },],
@@ -2358,17 +3003,33 @@ exports.NgvasArcComponent = NgvasArcComponent;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(0);
-const BezierCurveShape_1 = __webpack_require__(8);
-const base_component_1 = __webpack_require__(3);
-class NgvasBezierCurveComponent extends base_component_1.NgvasBaseComponent {
-    constructor() {
-        super(BezierCurveShape_1.BezierCurveShape);
+var core_1 = __webpack_require__(0);
+var BezierCurveShape_1 = __webpack_require__(8);
+var base_component_1 = __webpack_require__(3);
+var NgvasBezierCurveComponent = (function (_super) {
+    __extends(NgvasBezierCurveComponent, _super);
+    function NgvasBezierCurveComponent() {
+        return _super.call(this, BezierCurveShape_1.BezierCurveShape) || this;
     }
-    set curves(cs) { this.execOrDelay((s) => { s.clear(); cs.forEach(c => s.addCurve(c)); }); }
+    Object.defineProperty(NgvasBezierCurveComponent.prototype, "curves", {
+        set: function (cs) { this.execOrDelay(function (s) { s.clear(); cs.forEach(function (c) { return s.addCurve(c); }); }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-}
+    return NgvasBezierCurveComponent;
+}(base_component_1.NgvasBaseComponent));
 NgvasBezierCurveComponent.decorators = [
     { type: core_1.Component, args: [{
                 // moduleId: String(module.id),
@@ -2378,7 +3039,7 @@ NgvasBezierCurveComponent.decorators = [
             },] },
 ];
 /** @nocollapse */
-NgvasBezierCurveComponent.ctorParameters = () => [];
+NgvasBezierCurveComponent.ctorParameters = function () { return []; };
 NgvasBezierCurveComponent.propDecorators = {
     'curves': [{ type: core_1.Input, args: ["curves",] },],
 };
@@ -2391,23 +3052,39 @@ exports.NgvasBezierCurveComponent = NgvasBezierCurveComponent;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(0);
-const CircleShape_1 = __webpack_require__(9);
-const base_component_1 = __webpack_require__(3);
-class NgvasCircleComponent extends base_component_1.NgvasBaseComponent {
-    constructor() {
-        super(CircleShape_1.CircleShape);
+var core_1 = __webpack_require__(0);
+var CircleShape_1 = __webpack_require__(9);
+var base_component_1 = __webpack_require__(3);
+var NgvasCircleComponent = (function (_super) {
+    __extends(NgvasCircleComponent, _super);
+    function NgvasCircleComponent() {
+        return _super.call(this, CircleShape_1.CircleShape) || this;
     }
-    set radius(v) {
-        if (Array.isArray(v)) {
-            this.execOrDelay((s) => s.withRadius(v[0], v[1], v[2], v[3]));
-        }
-        else {
-            this.execOrDelay((s) => s.withRadius(v));
-        }
-    }
-}
+    Object.defineProperty(NgvasCircleComponent.prototype, "radius", {
+        set: function (v) {
+            if (Array.isArray(v)) {
+                this.execOrDelay(function (s) { return s.withRadius(v[0], v[1], v[2], v[3]); });
+            }
+            else {
+                this.execOrDelay(function (s) { return s.withRadius(v); });
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return NgvasCircleComponent;
+}(base_component_1.NgvasBaseComponent));
 NgvasCircleComponent.decorators = [
     { type: core_1.Component, args: [{
                 // moduleId: String(module.id),
@@ -2417,7 +3094,7 @@ NgvasCircleComponent.decorators = [
             },] },
 ];
 /** @nocollapse */
-NgvasCircleComponent.ctorParameters = () => [];
+NgvasCircleComponent.ctorParameters = function () { return []; };
 NgvasCircleComponent.propDecorators = {
     'radius': [{ type: core_1.Input, args: ["radius",] },],
 };
@@ -2430,17 +3107,33 @@ exports.NgvasCircleComponent = NgvasCircleComponent;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(0);
-const ImageShape_1 = __webpack_require__(10);
-const base_component_1 = __webpack_require__(3);
-class NgvasImageComponent extends base_component_1.NgvasBaseComponent {
-    constructor() {
-        super(ImageShape_1.ImageShape);
+var core_1 = __webpack_require__(0);
+var ImageShape_1 = __webpack_require__(10);
+var base_component_1 = __webpack_require__(3);
+var NgvasImageComponent = (function (_super) {
+    __extends(NgvasImageComponent, _super);
+    function NgvasImageComponent() {
+        return _super.call(this, ImageShape_1.ImageShape) || this;
     }
-    set src(i) { this.execOrDelay((s) => s.withImage(i)); }
+    Object.defineProperty(NgvasImageComponent.prototype, "src", {
+        set: function (i) { this.execOrDelay(function (s) { return s.withImage(i); }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-}
+    return NgvasImageComponent;
+}(base_component_1.NgvasBaseComponent));
 NgvasImageComponent.decorators = [
     { type: core_1.Component, args: [{
                 // moduleId: String(module.id),
@@ -2450,7 +3143,7 @@ NgvasImageComponent.decorators = [
             },] },
 ];
 /** @nocollapse */
-NgvasImageComponent.ctorParameters = () => [];
+NgvasImageComponent.ctorParameters = function () { return []; };
 NgvasImageComponent.propDecorators = {
     'src': [{ type: core_1.Input, args: ["src",] },],
 };
@@ -2463,17 +3156,33 @@ exports.NgvasImageComponent = NgvasImageComponent;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(0);
-const LineShape_1 = __webpack_require__(11);
-const base_component_1 = __webpack_require__(3);
-class NgvasLineComponent extends base_component_1.NgvasBaseComponent {
-    constructor() {
-        super(LineShape_1.LineShape);
+var core_1 = __webpack_require__(0);
+var LineShape_1 = __webpack_require__(11);
+var base_component_1 = __webpack_require__(3);
+var NgvasLineComponent = (function (_super) {
+    __extends(NgvasLineComponent, _super);
+    function NgvasLineComponent() {
+        return _super.call(this, LineShape_1.LineShape) || this;
     }
-    set lines(ls) { this.execOrDelay((s) => { s.clear(); ls.forEach(l => s.addLine(l)); }); }
+    Object.defineProperty(NgvasLineComponent.prototype, "lines", {
+        set: function (ls) { this.execOrDelay(function (s) { s.clear(); ls.forEach(function (l) { return s.addLine(l); }); }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-}
+    return NgvasLineComponent;
+}(base_component_1.NgvasBaseComponent));
 NgvasLineComponent.decorators = [
     { type: core_1.Component, args: [{
                 // moduleId: String(module.id),
@@ -2483,7 +3192,7 @@ NgvasLineComponent.decorators = [
             },] },
 ];
 /** @nocollapse */
-NgvasLineComponent.ctorParameters = () => [];
+NgvasLineComponent.ctorParameters = function () { return []; };
 NgvasLineComponent.propDecorators = {
     'lines': [{ type: core_1.Input, args: ["lines",] },],
 };
@@ -2496,32 +3205,49 @@ exports.NgvasLineComponent = NgvasLineComponent;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(0);
-const PolyShape_1 = __webpack_require__(12);
-const base_component_1 = __webpack_require__(3);
-class NgvasPolygonComponent extends base_component_1.NgvasBaseComponent {
-    constructor() {
-        super(PolyShape_1.PolyShape);
+var core_1 = __webpack_require__(0);
+var PolyShape_1 = __webpack_require__(12);
+var base_component_1 = __webpack_require__(3);
+var NgvasPolygonComponent = (function (_super) {
+    __extends(NgvasPolygonComponent, _super);
+    function NgvasPolygonComponent() {
+        return _super.call(this, PolyShape_1.PolyShape) || this;
     }
-    set sides(ls) {
-        this.execOrDelay((s) => {
-            s.clear();
-            for (const l of ls) {
-                if (l.length === 2) {
-                    s.addLine(l);
+    Object.defineProperty(NgvasPolygonComponent.prototype, "sides", {
+        set: function (ls) {
+            this.execOrDelay(function (s) {
+                s.clear();
+                for (var _i = 0, ls_1 = ls; _i < ls_1.length; _i++) {
+                    var l = ls_1[_i];
+                    if (l.length === 2) {
+                        s.addLine(l);
+                    }
+                    else if (l.length === 3) {
+                        s.addQuadratic(l);
+                    }
+                    else if (l.length === 4) {
+                        s.addBezier(l);
+                    }
                 }
-                else if (l.length === 3) {
-                    s.addQuadratic(l);
-                }
-                else if (l.length === 4) {
-                    s.addBezier(l);
-                }
-            }
-        });
-    }
+            });
+        },
+        enumerable: true,
+        configurable: true
+    });
     ;
-}
+    return NgvasPolygonComponent;
+}(base_component_1.NgvasBaseComponent));
 NgvasPolygonComponent.decorators = [
     { type: core_1.Component, args: [{
                 // moduleId: String(module.id),
@@ -2531,7 +3257,7 @@ NgvasPolygonComponent.decorators = [
             },] },
 ];
 /** @nocollapse */
-NgvasPolygonComponent.ctorParameters = () => [];
+NgvasPolygonComponent.ctorParameters = function () { return []; };
 NgvasPolygonComponent.propDecorators = {
     'sides': [{ type: core_1.Input, args: ["sides",] },],
 };
@@ -2544,17 +3270,33 @@ exports.NgvasPolygonComponent = NgvasPolygonComponent;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(0);
-const QuadraticCurveShape_1 = __webpack_require__(13);
-const base_component_1 = __webpack_require__(3);
-class NgvasQuadraticCurveComponent extends base_component_1.NgvasBaseComponent {
-    constructor() {
-        super(QuadraticCurveShape_1.QuadraticCurveShape);
+var core_1 = __webpack_require__(0);
+var QuadraticCurveShape_1 = __webpack_require__(13);
+var base_component_1 = __webpack_require__(3);
+var NgvasQuadraticCurveComponent = (function (_super) {
+    __extends(NgvasQuadraticCurveComponent, _super);
+    function NgvasQuadraticCurveComponent() {
+        return _super.call(this, QuadraticCurveShape_1.QuadraticCurveShape) || this;
     }
-    set curves(cs) { this.execOrDelay((s) => { s.clear(); cs.forEach(c => s.addCurve(c)); }); }
+    Object.defineProperty(NgvasQuadraticCurveComponent.prototype, "curves", {
+        set: function (cs) { this.execOrDelay(function (s) { s.clear(); cs.forEach(function (c) { return s.addCurve(c); }); }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-}
+    return NgvasQuadraticCurveComponent;
+}(base_component_1.NgvasBaseComponent));
 NgvasQuadraticCurveComponent.decorators = [
     { type: core_1.Component, args: [{
                 // moduleId: String(module.id),
@@ -2564,7 +3306,7 @@ NgvasQuadraticCurveComponent.decorators = [
             },] },
 ];
 /** @nocollapse */
-NgvasQuadraticCurveComponent.ctorParameters = () => [];
+NgvasQuadraticCurveComponent.ctorParameters = function () { return []; };
 NgvasQuadraticCurveComponent.propDecorators = {
     'curves': [{ type: core_1.Input, args: ["curves",] },],
 };
@@ -2577,15 +3319,27 @@ exports.NgvasQuadraticCurveComponent = NgvasQuadraticCurveComponent;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(0);
-const RectShape_1 = __webpack_require__(14);
-const base_component_1 = __webpack_require__(3);
-class NgvasRectangleComponent extends base_component_1.NgvasBaseComponent {
-    constructor() {
-        super(RectShape_1.RectShape);
+var core_1 = __webpack_require__(0);
+var RectShape_1 = __webpack_require__(14);
+var base_component_1 = __webpack_require__(3);
+var NgvasRectangleComponent = (function (_super) {
+    __extends(NgvasRectangleComponent, _super);
+    function NgvasRectangleComponent() {
+        return _super.call(this, RectShape_1.RectShape) || this;
     }
-}
+    return NgvasRectangleComponent;
+}(base_component_1.NgvasBaseComponent));
 NgvasRectangleComponent.decorators = [
     { type: core_1.Component, args: [{
                 // moduleId: String(module.id),
@@ -2595,7 +3349,7 @@ NgvasRectangleComponent.decorators = [
             },] },
 ];
 /** @nocollapse */
-NgvasRectangleComponent.ctorParameters = () => [];
+NgvasRectangleComponent.ctorParameters = function () { return []; };
 exports.NgvasRectangleComponent = NgvasRectangleComponent;
 //# sourceMappingURL=ngvas-rectange.component.js.map
 
@@ -2605,21 +3359,41 @@ exports.NgvasRectangleComponent = NgvasRectangleComponent;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(0);
-const TextShape_1 = __webpack_require__(15);
-const base_component_1 = __webpack_require__(3);
-class NgvasTextComponent extends base_component_1.NgvasBaseComponent {
-    constructor() {
-        super(TextShape_1.TextShape);
+var core_1 = __webpack_require__(0);
+var TextShape_1 = __webpack_require__(15);
+var base_component_1 = __webpack_require__(3);
+var NgvasTextComponent = (function (_super) {
+    __extends(NgvasTextComponent, _super);
+    function NgvasTextComponent() {
+        return _super.call(this, TextShape_1.TextShape) || this;
     }
-    set text(t) { this.execOrDelay((s) => s.text = t); }
+    Object.defineProperty(NgvasTextComponent.prototype, "text", {
+        set: function (t) { this.execOrDelay(function (s) { return s.text = t; }); },
+        enumerable: true,
+        configurable: true
+    });
     ;
-    set textStyle(t) {
-        this.execOrDelay((s) => s.textStyle(t.font, t.align, t.baseline));
-    }
+    Object.defineProperty(NgvasTextComponent.prototype, "textStyle", {
+        set: function (t) {
+            this.execOrDelay(function (s) { return s.textStyle(t.font, t.align, t.baseline); });
+        },
+        enumerable: true,
+        configurable: true
+    });
     ;
-}
+    return NgvasTextComponent;
+}(base_component_1.NgvasBaseComponent));
 NgvasTextComponent.decorators = [
     { type: core_1.Component, args: [{
                 // moduleId: String(module.id),
@@ -2629,7 +3403,7 @@ NgvasTextComponent.decorators = [
             },] },
 ];
 /** @nocollapse */
-NgvasTextComponent.ctorParameters = () => [];
+NgvasTextComponent.ctorParameters = function () { return []; };
 NgvasTextComponent.propDecorators = {
     'text': [{ type: core_1.Input, args: ["text",] },],
     'textStyle': [{ type: core_1.Input, args: ["textStyle",] },],
@@ -2644,56 +3418,70 @@ exports.NgvasTextComponent = NgvasTextComponent;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __webpack_require__(0);
-const CanvasGroup_1 = __webpack_require__(4);
-const base_component_1 = __webpack_require__(3);
-class NgvasComponent {
-    constructor(renderer) {
+var core_1 = __webpack_require__(0);
+var CanvasGroup_1 = __webpack_require__(4);
+var base_component_1 = __webpack_require__(3);
+var NgvasComponent = (function () {
+    function NgvasComponent(renderer) {
         this.renderer = renderer;
         this._width = 0;
         this._height = 0;
         this._isActive = true;
         this.ready = new core_1.EventEmitter();
     }
-    set width(w) {
-        this._width = +w;
-    }
-    set height(h) {
-        this._height = +h;
-    }
-    set active(a) {
-        this._isActive = a;
-    }
-    getShape() {
+    Object.defineProperty(NgvasComponent.prototype, "width", {
+        set: function (w) {
+            this._width = +w;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasComponent.prototype, "height", {
+        set: function (h) {
+            this._height = +h;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NgvasComponent.prototype, "active", {
+        set: function (a) {
+            this._isActive = a;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    NgvasComponent.prototype.getShape = function () {
         return this._canvasGroup;
-    }
+    };
     /**
      * Fires once after ng-content is intitialized.
      */
-    ngAfterContentInit() {
-        const canvas = this.canvasRef.nativeElement;
+    NgvasComponent.prototype.ngAfterContentInit = function () {
+        var _this = this;
+        var canvas = this.canvasRef.nativeElement;
         this.renderer.setAttribute(canvas, "width", String(this._width));
         this.renderer.setAttribute(canvas, "height", String(this._height));
         this._canvasGroup = new CanvasGroup_1.CanvasGroup(canvas, undefined, this._isActive);
-        this.contentChildren.forEach(c => this._canvasGroup.addChild(c.initShape(canvas, this._canvasGroup.context)));
+        this.contentChildren.forEach(function (c) { return _this._canvasGroup.addChild(c.initShape(canvas, _this._canvasGroup.context)); });
         this.ready.emit(this);
         this._contentSubscription = this.contentChildren.changes
-            .subscribe(c => {
-            this._canvasGroup.removeAllChildren();
-            c.forEach((c2) => this._canvasGroup.addChild(c2.initShape(canvas, this._canvasGroup.context)));
+            .subscribe(function (c) {
+            _this._canvasGroup.removeAllChildren();
+            c.forEach(function (c2) { return _this._canvasGroup.addChild(c2.initShape(canvas, _this._canvasGroup.context)); });
         });
-    }
+    };
     /**
      * Fires when the component is destroyed.
      */
-    ngOnDestroy() {
+    NgvasComponent.prototype.ngOnDestroy = function () {
         this._canvasGroup.isActive = false;
         this._canvasGroup.removeAllChildren();
         if (this._contentSubscription !== undefined) {
             this._contentSubscription.unsubscribe();
         }
-    }
-}
+    };
+    return NgvasComponent;
+}());
 NgvasComponent.decorators = [
     { type: core_1.Component, args: [{
                 // moduleId: String(module.id),
@@ -2703,9 +3491,9 @@ NgvasComponent.decorators = [
             },] },
 ];
 /** @nocollapse */
-NgvasComponent.ctorParameters = () => [
+NgvasComponent.ctorParameters = function () { return [
     { type: core_1.Renderer2, decorators: [{ type: core_1.Inject, args: [core_1.Renderer2,] },] },
-];
+]; };
 NgvasComponent.propDecorators = {
     'canvasRef': [{ type: core_1.ViewChild, args: ["ngvasCanvas",] },],
     'contentChildren': [{ type: core_1.ContentChildren, args: [base_component_1.NgvasBaseComponent,] },],
@@ -2724,20 +3512,20 @@ exports.NgvasComponent = NgvasComponent;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const PixelHitArea_1 = __webpack_require__(5);
-const BaseStyle_1 = __webpack_require__(1);
-const _tweenEasings = __webpack_require__(16);
-const CanvasGroup_1 = __webpack_require__(4);
-const ArcShape_1 = __webpack_require__(6);
-const BaseShape_1 = __webpack_require__(7);
-const BezierCurveShape_1 = __webpack_require__(8);
-const CircleShape_1 = __webpack_require__(9);
-const ImageShape_1 = __webpack_require__(10);
-const LineShape_1 = __webpack_require__(11);
-const PolyShape_1 = __webpack_require__(12);
-const QuadraticCurveShape_1 = __webpack_require__(13);
-const RectShape_1 = __webpack_require__(14);
-const TextShape_1 = __webpack_require__(15);
+var PixelHitArea_1 = __webpack_require__(5);
+var BaseStyle_1 = __webpack_require__(1);
+var _tweenEasings = __webpack_require__(16);
+var CanvasGroup_1 = __webpack_require__(4);
+var ArcShape_1 = __webpack_require__(6);
+var BaseShape_1 = __webpack_require__(7);
+var BezierCurveShape_1 = __webpack_require__(8);
+var CircleShape_1 = __webpack_require__(9);
+var ImageShape_1 = __webpack_require__(10);
+var LineShape_1 = __webpack_require__(11);
+var PolyShape_1 = __webpack_require__(12);
+var QuadraticCurveShape_1 = __webpack_require__(13);
+var RectShape_1 = __webpack_require__(14);
+var TextShape_1 = __webpack_require__(15);
 var ngvas_module_1 = __webpack_require__(19);
 exports.NgvasModule = ngvas_module_1.NgvasModule;
 var hitAreas;

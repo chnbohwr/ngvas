@@ -5,7 +5,7 @@ import { BaseStyle } from "./styles/BaseStyle";
 export declare class Group extends BaseStyle implements IGroup {
     private _children;
     private __isVisible;
-    private __isActive;
+    protected __isActive: boolean;
     constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, name: string);
     readonly type: ShapeType;
     isActive: boolean;

@@ -37,7 +37,7 @@ export declare abstract class BaseShape implements IShape, ITraceable, IConstrai
     private _skewX;
     private _skewY;
     private _isActive;
-    private _isVisible;
+    protected _isVisible: boolean;
     private _originToCenter;
     protected _clipShape: BaseShape | undefined;
     protected tweenManager: TweenManager;
