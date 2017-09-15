@@ -27,7 +27,7 @@ export class CanvasGroup extends Group {
     ) {
         // as any disables null check.
         super(canvas, offscreenCanvas.getContext("2d") as CanvasRenderingContext2D, canvas.id || "CanvasGroup");
-        super.isActive = isActive;
+        this.__isActive = isActive;
         this.width = canvas.width;
         this.height = canvas.height;
         // Async so other shapes can be added before first draw.
@@ -45,17 +45,17 @@ export class CanvasGroup extends Group {
     }
 
     public get isActive () {
-        return super.isActive;
+        return this.__isActive;
     }
 
     public set isActive (v: boolean) {
-        if (super.isActive === false && v === true) {
+        if (this.__isActive === false && v === true) {
             this._reqAniFrameId = window.requestAnimationFrame(() => this.draw(canvasCtxt));
         } else {
             window.cancelAnimationFrame(this._reqAniFrameId);
             this._reqAniFrameId = 0;
         }
-        super.isActive = v;
+        this.__isActive = v;
     }
 
 

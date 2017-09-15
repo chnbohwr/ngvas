@@ -47,7 +47,7 @@ export abstract class BaseShape implements IShape, ITraceable, IConstrainable {
     private _skewX = 0;
     private _skewY = 0;
     private _isActive = true;
-    private _isVisible = true;
+    protected _isVisible = true;
     private _originToCenter = false;
 
 

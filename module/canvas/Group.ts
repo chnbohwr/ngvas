@@ -11,7 +11,7 @@ export class Group extends BaseStyle implements IGroup {
     private _children: BaseShape[] = [];
 
     private __isVisible = true;
-    private __isActive = true;
+    protected __isActive = true;
 
     public constructor (
         canvas: HTMLCanvasElement,
