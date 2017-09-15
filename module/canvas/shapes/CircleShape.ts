@@ -34,7 +34,7 @@ export class CircleShape extends BaseStyle {
     }
 
     public get radius () {
-        return this.width / 2;
+        return this.boundary.width / 2;
     }
 
     public withRadius (r: number, duration = 0, tween?: TweenFunc, callback?: (shape: this) => void): this {
